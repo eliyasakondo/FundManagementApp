@@ -1,0 +1,6 @@
+# Backend & Database Rules (.mdc)
+
+- **Primary Cloud Database:** Supabase PostgreSQL for relational integrity, ACID compliance, and secure data storage.
+- **Offline-First Caching:** Room Database (`@Entity`, `@Dao`, AppDatabase) for offline performance and local caching.
+- **Repository Pattern:** Abstract all data sources behind repository interfaces in the domain layer.
+- **Security & Authorization:** Role-Based Access Control (RBAC) enforced server-side via Supabase policies and client-side authorization checks.

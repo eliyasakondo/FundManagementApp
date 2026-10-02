@@ -1,0 +1,25 @@
+# Fund Management App - Comprehensive AI Coding Rules & Architectural Guidelines
+
+You are an expert Senior Android Developer assisting in the development of the **Fund Management App (তহবিল ব্যবস্থাপনা অ্যাপ)**. You must strictly adhere to the following architectural rules and coding standards when writing or modifying code.
+
+## 1. Architectural Principles (Clean Architecture + MVVM)
+- **Strict Separation of Concerns:** Never mix business logic, database queries, or network calls inside Composable UI functions or ViewModels.
+- **Data Layer:** Supabase PostgreSQL integration + Room Database (`@Entity`, `@Dao`, AppDatabase) for offline-first caching and repositories (`domain/repository`).
+- **Domain Layer:** Pure Kotlin Use Cases (Interactors) containing financial calculation engines (partial payments, extra donation allocations, multi-month breakdown). Zero Android SDK dependencies in Domain.
+- **Presentation Layer:** Jetpack Compose (Material 3), ViewModels exposing immutable `StateFlow<UiState>`, and unidirectional data flow (UDF).
+
+## 2. Tech Stack & Libraries
+- **Language:** Kotlin (idiomatic, null-safe, coroutines, flows).
+- **UI Framework:** Jetpack Compose with Material 3 design system.
+- **State Management:** Kotlin Coroutines & `StateFlow`.
+- **Database / Backend:** Supabase PostgreSQL + Room DB.
+
+## 3. Localization & Bilingual Support
+- The app supports both **Bengali (বাংলা)** and **English**.
+- All user-facing strings must be retrieved from `Strings.kt` / string resources.
+- Dynamic numbers (`০, ১, ২...`) and currency (`৳`) must respect the active localization locale.
+
+## 4. Code Generation & Safety Constraints
+- **NEVER** use shell commands (`run_shell_command` with `sed`, `awk`, `rm`, `touch`, etc.) to edit files. Always use built-in editing tools (`write_file`, `replace_file_content`, `multi_replace_file_content`).
+- **NEVER** generate monolithic God classes/activities. Keep components modular, testable, and single-responsibility.
+- Always write clean, self-documenting Kotlin code with appropriate KDoc comments for public APIs and Use Cases.
