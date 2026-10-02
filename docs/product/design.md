@@ -176,6 +176,19 @@ All interactive elements (Buttons, Cards, Inputs, List Items) MUST define and vi
 - **Hover / Focus State:**
   - Brightness increases by 5%, Subtle 1dp border added
 
+### 4.7 Adaptive Layouts & Navigation Controls
+
+| Component Pattern | Material 3 Implementation | Purpose & Design Rules |
+| :--- | :--- | :--- |
+| **Grid System** | `LazyVerticalGrid` / `GridCells.Adaptive(minSize = 160.dp)` | 2-column/3-column responsive layout for dashboard metrics, summary cards, and member lists. |
+| **Side Menu (Drawer)** | `ModalNavigationDrawer` | Slide-out side menu for profile switching, language toggle, and admin management. |
+| **Tab Bar (Bottom Nav)** | `NavigationBar` & `NavigationBarItem` | Fixed bottom bar with active Emerald Green pill indicators (`Dashboard`, `Statement`, `Notifications`, `Profile`). |
+| **Floating Action Button** | `ExtendedFloatingActionButton` | Emerald Green (`#1B5E20`) FAB for primary action ("+ Record Payment" / "+ পেমেন্ট জমা") with scroll auto-shrink. |
+| **Modal Sheet** | `ModalBottomSheet` | Drag-handle modal sheet overlay for payment entry forms, filter options, and receipt details. |
+| **Three-Dot Menu** | `IconButton` with `DropdownMenu` | Contextual overflow menu on card items (Edit, Delete, Lock, Download Receipt). |
+| **Rectangular Cards** | `Card` / `CardDefaults.cardColors()` | 12dp/16dp rounded rectangular cards with subtle 1dp `#E2E8F0` borders and 2dp tonal elevation. |
+| **Navigation Rail (Rudder)** | `NavigationRail` & `NavigationRailItem` | Left-hand vertical navigation rail for landscape, foldable, and tablet viewports. |
+
 ---
 
 ## 5. Global UX States & Micro-interactions

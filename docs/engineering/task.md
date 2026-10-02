@@ -4,8 +4,8 @@
 ---
 
 > [!TIP]
-> **Active Milestone:** **Milestone 3 — Domain Layer Models & Financial Calculation Engine**
-> **Current Sprint Goal:** Implement Use Cases for surplus donation split (`ProcessPaymentUseCase`), partial payment accumulator, and multi-month prepayments.
+> **Active Milestone:** **Milestone 4 — Data Layer (Supabase PostgreSQL, Room DB & Repositories)**
+> **Current Sprint Goal:** Implement Supabase Client configuration, DTO mappers, and repository implementations.
 
 ---
 
@@ -15,8 +15,8 @@
 | :--- | :--- | :--- | :--- |
 | **Milestone 1** | Planning, Architecture & Enterprise Documentation Setup | ✅ Completed | 100% |
 | **Milestone 2** | Clean Architecture Package Structure & Dependencies | ✅ Completed | 100% |
-| **Milestone 3** | Domain Layer Models & Financial Calculation Engine | 🚀 In Progress | 25% |
-| **Milestone 4** | Data Layer (Supabase PostgreSQL, Room DB & Repositories) | ⏳ Pending | 0% |
+| **Milestone 3** | Domain Layer Models & Financial Calculation Engine | ✅ Completed | 100% |
+| **Milestone 4** | Data Layer (Supabase PostgreSQL, Room DB & Repositories) | 🚀 In Progress | 25% |
 | **Milestone 5** | Presentation Layer (ViewModels, Compose UI & Bilingual Formatting) | ⏳ Pending | 0% |
 | **Milestone 6** | Automated Testing, Security Hardening & Release Deployment | ⏳ Pending | 0% |
 
@@ -44,8 +44,10 @@
 ### Milestone 3: Domain Layer Models & Financial Calculation Engine
 - [x] Create Pure Kotlin Domain Models (`Member`, `Contribution`, `Payment`, `ExtraDonation`, `Expense`, `Notice`, `FundAccount`)
 - [x] Implement `ProcessPaymentUseCase.kt` (Monthly contribution vs. surplus donation split formula)
-- [ ] Implement `PartialPaymentUseCase.kt` (Status lifecycle: `UNPAID` $\rightarrow$ `PARTIAL` $\rightarrow$ `PAID`)
-- [ ] Implement `MultiMonthPaymentUseCase.kt` (Lump sum multi-month distribution algorithm)
+- [x] Implement `PartialPaymentUseCase.kt` (Status lifecycle: `UNPAID` $\rightarrow$ `PARTIAL` $\rightarrow$ `PAID`)
+- [x] Implement `MultiMonthPaymentUseCase.kt` (Lump sum multi-month distribution algorithm)
+- [x] Implement `GetMemberStatementUseCase.kt` (Bilingual annual contribution statement summary)
+- [x] Write 100% Coverage Unit Tests for all Use Cases (`8 passed, 0 failed`)
 
 ---
 
@@ -65,6 +67,6 @@
 ---
 
 ### Milestone 6: Automated Testing, Security Hardening & Deployment
-- [ ] Write 100% Coverage Unit Tests for all Domain Use Cases (`ProcessPaymentUseCaseTest`)
+- [x] Write 100% Coverage Unit Tests for all Domain Use Cases (`app/src/test/`)
 - [ ] Execute Room DAO In-Memory Instrumented Database Tests
 - [ ] Execute release build verification (`gradlew assembleRelease`) and verify zero APK vulnerabilities
