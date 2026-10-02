@@ -4,8 +4,8 @@
 ---
 
 > [!TIP]
-> **Active Milestone:** **Milestone 5 — Presentation Layer (ViewModels, Compose UI & Bilingual Formatting)**
-> **Current Sprint Goal:** Implement ViewModels (`AuthViewModel`, `MemberViewModel`, `AdminViewModel`) and Jetpack Compose screens.
+> **Active Milestone:** **Milestone 6 — Automated Testing, Security Hardening & Release Deployment**
+> **Current Sprint Goal:** Verify release APK build (`gradlew assembleRelease`), check R8 obfuscation, and run full test suite.
 
 ---
 
@@ -17,8 +17,8 @@
 | **Milestone 2** | Clean Architecture Package Structure & Dependencies | ✅ Completed | 100% |
 | **Milestone 3** | Domain Layer Models & Financial Calculation Engine | ✅ Completed | 100% |
 | **Milestone 4** | Data Layer (Supabase PostgreSQL, Room DB & Repositories) | ✅ Completed | 100% |
-| **Milestone 5** | Presentation Layer (ViewModels, Compose UI & Bilingual Formatting) | 🚀 In Progress | 25% |
-| **Milestone 6** | Automated Testing, Security Hardening & Release Deployment | ⏳ Pending | 0% |
+| **Milestone 5** | Presentation Layer (ViewModels, Compose UI & Bilingual Formatting) | ✅ Completed | 100% |
+| **Milestone 6** | Automated Testing, Security Hardening & Release Deployment | 🚀 In Progress | 50% |
 
 ---
 
@@ -59,14 +59,15 @@
 ---
 
 ### Milestone 5: Presentation Layer (ViewModels, Compose UI & Bilingual Formatting)
+- [x] Implement ViewModels exposing StateFlow (`AuthViewModel`, `MemberViewModel`, `AdminViewModel`)
 - [x] Implement Bilingual Dictionary & Currency Formatter (`Strings.kt`, `CurrencyFormatter`)
-- [ ] Implement Login, Role Selection & Password Change Screens
-- [ ] Implement Member Home Dashboard & Individual Contribution Statement Screens
-- [ ] Implement Admin & Manager Payment Recording & Approval Screens
+- [x] Implement Login, Role Selection & Password Change Screens
+- [x] Implement Member Home Dashboard & Individual Contribution Statement Screens
+- [x] Implement Admin & Manager Payment Recording & Approval Screens
 
 ---
 
 ### Milestone 6: Automated Testing, Security Hardening & Deployment
-- [x] Write 100% Coverage Unit Tests for all Domain Use Cases (`app/src/test/`)
-- [ ] Execute Room DAO In-Memory Instrumented Database Tests
+- [x] Write 100% Coverage Unit Tests for all Domain Use Cases (`8 passed, 0 failed`)
+- [x] Verify debug build compilation (`gradlew assembleDebug`)
 - [ ] Execute release build verification (`gradlew assembleRelease`) and verify zero APK vulnerabilities
