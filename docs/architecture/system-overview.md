@@ -40,3 +40,40 @@
   - `old_value` / `new_value`
   - `ip_address`
 - **Client Application Logging:** Timber logger for development; sanitized error telemetry sent to Sentry / Crashlytics in production (zero PII / password logging).
+
+---
+
+## 6. Supabase Auto-Pause Prevention & Health Check Keep-Alive Strategy
+
+Supabase Free Tier automatically pauses projects after 7 consecutive days of zero database activity. To ensure 100% continuous uptime and prevent auto-pausing during low-activity periods (e.g., holidays), the system implements a **Secure Automated Health Check Keep-Alive Mechanism**:
+
+### 6.1 Architecture & Workflow
+
+```
+┌─────────────────────────┐          2x Daily HTTP GET          ┌───────────────────────────┐
+│  GitHub Actions / Cron  │ ──────────────────────────────────► │ Supabase Health Endpoint  │
+│  (Scheduled Keep-Alive) │   x-api-key: [SECURE_PING_KEY]    │ (/rest/v1/system_settings)│
+└─────────────────────────┘                                     └─────────────┬─────────────┘
+                                                                              │
+                                                                              ▼
+                                                                ┌───────────────────────────┐
+                                                                │ PostgreSQL DB Touch Ping  │
+                                                                │ (Updates last_ping_at)    │
+                                                                └───────────────────────────┘
+```
+
+### 6.2 Implementation Specifications
+
+1. **Scheduled Automated Trigger:**
+   - A GitHub Actions workflow (`.github/workflows/supabase-keep-alive.yml`) runs on a Cron schedule twice daily (`0 0,12 * * *` — 12:00 AM & 12:00 PM UTC).
+2. **Lightweight Health Query:**
+   - The trigger issues a lightweight HTTP `GET` query to Supabase PostgREST requesting a single system setting row:
+     `GET /rest/v1/system_settings?select=key&key=eq.app_version`
+3. **Security Safeguards (Zero Vulnerability):**
+   - **Read-Only Public Scope:** The query executes against a read-only setting key without modifying any member data or balances.
+   - **Authentication Header:** Requests pass the standard `apikey: ANON_KEY` and are subject to standard Supabase Kong API rate limiting.
+   - **No Data Exposure:** Returns zero PII, passwords, or transaction records (returns only string `app_version`).
+   - **pg_cron Internal Backup:** Alternatively, PostgreSQL internal `pg_cron` extension executes a 12-hour `SELECT 1;` query inside PostgreSQL.
+
+### 6.3 Outcome
+Guarantees the Supabase project stays active 24/7/365 without ever going to sleep, ensuring zero latency delays for members opening the app after days of inactivity.

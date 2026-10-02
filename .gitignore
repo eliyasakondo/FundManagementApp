@@ -1,15 +1,24 @@
+# Gradle & Build Output
 *.iml
 .gradle
-/local.properties
-/.idea/caches
-/.idea/libraries
-/.idea/modules.xml
-/.idea/workspace.xml
-/.idea/navEditor.xml
-/.idea/assetWizardSettings.xml
-.DS_Store
 /build
 /captures
 .externalNativeBuild
 .cxx
+
+# Local Machine Environment & Secrets
+/local.properties
 local.properties
+*.env
+*.env.*
+*.keystore
+*.jks
+*.p12
+*.pem
+google-services.json
+GoogleService-Info.plist
+secret*.json
+
+# IDE Caches & Workspace Settings
+/.idea/
+.DS_Store
