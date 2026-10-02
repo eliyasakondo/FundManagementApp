@@ -4,8 +4,8 @@
 ---
 
 > [!TIP]
-> **Active Milestone:** **Milestone 4 — Data Layer (Supabase PostgreSQL, Room DB & Repositories)**
-> **Current Sprint Goal:** Implement Supabase Client configuration, DTO mappers, and repository implementations.
+> **Active Milestone:** **Milestone 5 — Presentation Layer (ViewModels, Compose UI & Bilingual Formatting)**
+> **Current Sprint Goal:** Implement ViewModels (`AuthViewModel`, `MemberViewModel`, `AdminViewModel`) and Jetpack Compose screens.
 
 ---
 
@@ -16,8 +16,8 @@
 | **Milestone 1** | Planning, Architecture & Enterprise Documentation Setup | ✅ Completed | 100% |
 | **Milestone 2** | Clean Architecture Package Structure & Dependencies | ✅ Completed | 100% |
 | **Milestone 3** | Domain Layer Models & Financial Calculation Engine | ✅ Completed | 100% |
-| **Milestone 4** | Data Layer (Supabase PostgreSQL, Room DB & Repositories) | 🚀 In Progress | 25% |
-| **Milestone 5** | Presentation Layer (ViewModels, Compose UI & Bilingual Formatting) | ⏳ Pending | 0% |
+| **Milestone 4** | Data Layer (Supabase PostgreSQL, Room DB & Repositories) | ✅ Completed | 100% |
+| **Milestone 5** | Presentation Layer (ViewModels, Compose UI & Bilingual Formatting) | 🚀 In Progress | 25% |
 | **Milestone 6** | Automated Testing, Security Hardening & Release Deployment | ⏳ Pending | 0% |
 
 ---
@@ -53,8 +53,8 @@
 
 ### Milestone 4: Data Layer (Supabase PostgreSQL & Room DB)
 - [x] Create Room Database `AppDatabase`, Entities (`MemberEntity`, `ContributionEntity`, `PaymentEntity`), and DAOs (`MemberDao`)
-- [ ] Configure Supabase Client instance and Network DTO Mappers
-- [x] Implement Repository interfaces (`MemberRepositoryImpl`, `ContributionRepositoryImpl`)
+- [x] Configure Supabase Client Provider (`SupabaseClientProvider`) and Network DTO Mappers (`MemberDto`, `ContributionDto`, `PaymentDto`)
+- [x] Implement Repository implementations (`MemberRepositoryImpl`, `ContributionRepositoryImpl`)
 
 ---
 
