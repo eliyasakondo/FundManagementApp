@@ -1,0 +1,13 @@
+# General Development Rules (.mdc)
+
+## 1. DRY Principle & Code Reusability
+- **Don't Repeat Yourself (DRY):** NEVER duplicate business logic, validation rules, or UI components. Reuse existing components in `presentation/common/` and domain models.
+- **Single Source of Truth:** Keep a single, centralized source of truth for string dictionaries (`Strings.kt`), currency/digit formatters (`CurrencyFormatter`), and theme design tokens (`Theme.kt`).
+
+## 2. Language & Localization
+- Write idiomatic Kotlin code with strict null safety and coroutines.
+- All user-facing UI texts, digits (`০, ১, ২...`), and currency (`৳`) MUST support dynamic Bengali and English localization. No hardcoded English strings in UI components.
+
+## 3. Tool & File Safety
+- **NEVER** use destructive shell commands (`rm`, `sed`). Always use built-in IDE editing tools (`write_file`, `replace_file_content`).
+- Make small, targeted edits. Do not pollute or modify unrelated files.

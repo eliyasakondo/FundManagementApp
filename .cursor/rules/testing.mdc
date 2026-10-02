@@ -1,0 +1,5 @@
+# Testing Rules (.mdc)
+
+- **Unit Testing:** Write comprehensive unit tests for all financial calculation Use Cases (partial payments, extra donation routing, multi-month allocations) using JUnit 5 and MockK.
+- **Instrumented & UI Testing:** Verify Room DAOs and key Jetpack Compose UI screens.
+- **Test-Driven Refinement:** Run type-check, lint, and unit tests after implementing each feature slice.

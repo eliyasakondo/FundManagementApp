@@ -1,0 +1,11 @@
+# Architecture Rules (.mdc)
+
+## 1. Clean Architecture Guardrails (No Structural Breakdown)
+- **Strict Separation of Layers:**
+  - **Data Layer:** Supabase PostgreSQL API + Room DB DAOs + Repository Implementations.
+  - **Domain Layer:** Pure Kotlin Use Cases (Interactors) & Domain Models. Zero Android framework imports.
+  - **Presentation Layer:** ViewModels exposing `StateFlow<UiState>` + Jetpack Compose UI.
+- **Zero Business Logic in UI:** Composable screens must ONLY render state and dispatch events. Never write database queries or payment allocation calculations inside Composables or ViewModels.
+
+## 2. Modular Reusable UI Components
+- Reusable UI elements (Buttons, Status Badges, Contribution Cards, Language Toggle, Dialogs) belong in `presentation/common/`. Never rewrite custom buttons or card layouts in individual screens.
