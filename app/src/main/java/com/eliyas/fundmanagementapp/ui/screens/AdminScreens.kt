@@ -706,10 +706,16 @@ fun AddMemberModalPreview() {
 fun AdminSettingsScreen() {
     val lang by OrganizationRepository.currentLanguage.collectAsState()
 
-    var showMemberNameByDefault by remember { mutableStateOf(true) }
+    // Granular RBAC Permissions Flags State
+    var allowManagerPaymentRecord by remember { mutableStateOf(true) }
+    var allowManagerApprovePayment by remember { mutableStateOf(false) }
+    var allowManagerExpenseRecord by remember { mutableStateOf(true) }
+    var allowManagerRateChange by remember { mutableStateOf(false) }
+
+    var showMemberNamesPublicly by remember { mutableStateOf(true) }
     var showDonationAmountsPublicly by remember { mutableStateOf(true) }
-    var allowManagerExpenseRecording by remember { mutableStateOf(true) }
-    var requireAdminApprovalForPayments by remember { mutableStateOf(false) }
+    var showOrgBalanceToMembers by remember { mutableStateOf(true) }
+    var allowMemberReportExport by remember { mutableStateOf(false) }
 
     LazyColumn(
         modifier = Modifier
@@ -720,94 +726,19 @@ fun AdminSettingsScreen() {
     ) {
         item {
             Text(
-                text = if (lang == Language.BN) "এডমিন সেটিংস ও সিস্টেম কনফিগারেশন" else "Admin System Settings & Privacy Control",
+                text = if (lang == Language.BN) "এডমিন সিস্টেম সেটিংস ও রোলস পারমিশন কন্ট্রোল" else "Admin System Settings & Role Permissions Control",
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold,
                 color = PrimaryGreen
             )
             Text(
-                text = if (lang == Language.BN) "সংগঠনের প্রাইভেসি, ম্যানেজার পারমিশন ও ব্যাকআপ সেটিংস" else "Configure Privacy Rules, Manager Permissions & System Data",
+                text = if (lang == Language.BN) "ম্যানেজার ও মেম্বারদের জন্য গ্র্যানুলার আরবিএসি (RBAC) এক্সেস সেটিংস" else "Configure Granular RBAC Permissions for Manager and Member Roles",
                 fontSize = 12.sp,
                 color = TextSecondary
             )
         }
 
-        // Privacy & Member Visibility Section
-        item {
-            Card(
-                shape = RoundedCornerShape(16.dp),
-                colors = CardDefaults.cardColors(containerColor = SurfaceWhite),
-                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(Icons.Default.Visibility, contentDescription = null, tint = PrimaryGreen)
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(
-                            text = if (lang == Language.BN) "প্রাইভেসি ও সদস্যের তথ্য দৃশ্যমানতা" else "Privacy & Member Visibility Rules",
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 15.sp,
-                            color = PrimaryGreen
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.height(12.dp))
-
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Column(modifier = Modifier.weight(1f)) {
-                            Text(
-                                text = if (lang == Language.BN) "সদস্যের নাম প্রকাশ করুন" else "Show Member Name Publicly",
-                                fontWeight = FontWeight.SemiBold,
-                                fontSize = 13.sp
-                            )
-                            Text(
-                                text = if (lang == Language.BN) "পেমেন্ট তালিকায় সদস্যের নাম দৃশ্যমান থাকবে" else "Display member name in public payment histories",
-                                fontSize = 11.sp,
-                                color = TextSecondary
-                            )
-                        }
-                        Switch(
-                            checked = showMemberNameByDefault,
-                            onCheckedChange = { showMemberNameByDefault = it },
-                            colors = SwitchDefaults.colors(checkedThumbColor = SurfaceWhite, checkedTrackColor = PrimaryGreen)
-                        )
-                    }
-
-                    Divider(modifier = Modifier.padding(vertical = 10.dp), color = SoftBackground)
-
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Column(modifier = Modifier.weight(1f)) {
-                            Text(
-                                text = if (lang == Language.BN) "অনুদান ও চাঁদার পরিমাণ প্রকাশ করুন" else "Show Donation Amounts Publicly",
-                                fontWeight = FontWeight.SemiBold,
-                                fontSize = 13.sp
-                            )
-                            Text(
-                                text = if (lang == Language.BN) "অন্যান্য সদস্যরা জমার টাকার পরিমাণ দেখতে পাবে" else "Allow other members to see payment amounts",
-                                fontSize = 11.sp,
-                                color = TextSecondary
-                            )
-                        }
-                        Switch(
-                            checked = showDonationAmountsPublicly,
-                            onCheckedChange = { showDonationAmountsPublicly = it },
-                            colors = SwitchDefaults.colors(checkedThumbColor = SurfaceWhite, checkedTrackColor = PrimaryGreen)
-                        )
-                    }
-                }
-            }
-        }
-
-        // Manager Permissions Section
+        // 1. MANAGER ROLE PERMISSIONS MATRIX
         item {
             Card(
                 shape = RoundedCornerShape(16.dp),
@@ -820,7 +751,7 @@ fun AdminSettingsScreen() {
                         Icon(Icons.Default.Security, contentDescription = null, tint = WarmGold)
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
-                            text = if (lang == Language.BN) "ম্যানেজার পারমিশন ও এক্সেস লেভেল" else "Manager Permissions & Controls",
+                            text = if (lang == Language.BN) "ম্যানেজার রোল পারমিশন সেটিংস" else "Manager Role Permissions Matrix",
                             fontWeight = FontWeight.Bold,
                             fontSize = 15.sp,
                             color = PrimaryGreen
@@ -829,60 +760,111 @@ fun AdminSettingsScreen() {
 
                     Spacer(modifier = Modifier.height(12.dp))
 
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Column(modifier = Modifier.weight(1f)) {
-                            Text(
-                                text = if (lang == Language.BN) "ম্যানেজারকে খরচ যুক্ত করার অনুমতি দিন" else "Allow Managers to Record Expenses",
-                                fontWeight = FontWeight.SemiBold,
-                                fontSize = 13.sp
-                            )
-                            Text(
-                                text = if (lang == Language.BN) "ম্যানেজার সংগঠনের দৈনন্দিন খরচ এন্ট্রি দিতে পারবে" else "Managers can submit expense records",
-                                fontSize = 11.sp,
-                                color = TextSecondary
-                            )
-                        }
-                        Switch(
-                            checked = allowManagerExpenseRecording,
-                            onCheckedChange = { allowManagerExpenseRecording = it },
-                            colors = SwitchDefaults.colors(checkedThumbColor = SurfaceWhite, checkedTrackColor = PrimaryGreen)
-                        )
-                    }
+                    // Manager Option 1: Record Payments
+                    PermissionToggleRow(
+                        title = if (lang == Language.BN) "অফলাইন পেমেন্ট এন্ট্রি দেওয়া" else "Record Member Payments",
+                        subtitle = if (lang == Language.BN) "ম্যানেজার ম্যানুয়াল পেমেন্ট রসিদ তৈরি করতে পারবে" else "Allow manager to log offline contribution receipts",
+                        isChecked = allowManagerPaymentRecord,
+                        onCheckedChange = { allowManagerPaymentRecord = it }
+                    )
 
-                    Divider(modifier = Modifier.padding(vertical = 10.dp), color = SoftBackground)
+                    HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp), color = SoftBackground)
 
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Column(modifier = Modifier.weight(1f)) {
-                            Text(
-                                text = if (lang == Language.BN) "পেমেন্ট এন্ট্রিতে এডমিন অনুমোদন বাধ্যতামূলক" else "Require Admin Approval for Payments",
-                                fontWeight = FontWeight.SemiBold,
-                                fontSize = 13.sp
-                            )
-                            Text(
-                                text = if (lang == Language.BN) "ম্যানেজারের পেমেন্ট এন্ট্রি এডমিন এপ্রুভ না করা পর্যন্ত পেন্ডিং থাকবে" else "Manager payment entries require Admin approval",
-                                fontSize = 11.sp,
-                                color = TextSecondary
-                            )
-                        }
-                        Switch(
-                            checked = requireAdminApprovalForPayments,
-                            onCheckedChange = { requireAdminApprovalForPayments = it },
-                            colors = SwitchDefaults.colors(checkedThumbColor = SurfaceWhite, checkedTrackColor = PrimaryGreen)
-                        )
-                    }
+                    // Manager Option 2: Approve Payments Directly
+                    PermissionToggleRow(
+                        title = if (lang == Language.BN) "পেমেন্ট সরাসরি অনুমোদন করা" else "Approve Payments Directly",
+                        subtitle = if (lang == Language.BN) "এডমিন এপ্রুভাল ছাড়াই পেমেন্ট কনফার্ম হবে" else "Manager entries bypass Admin approval queue",
+                        isChecked = allowManagerApprovePayment,
+                        onCheckedChange = { allowManagerApprovePayment = it }
+                    )
+
+                    HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp), color = SoftBackground)
+
+                    // Manager Option 3: Record Expenses
+                    PermissionToggleRow(
+                        title = if (lang == Language.BN) "সংগঠনের খরচ যুক্ত করা" else "Record Organization Expenses",
+                        subtitle = if (lang == Language.BN) "ম্যানেজার দৈনন্দিন খরচের ভাউচার এন্ট্রি দিতে পারবে" else "Allow manager to enter expense records",
+                        isChecked = allowManagerExpenseRecord,
+                        onCheckedChange = { allowManagerExpenseRecord = it }
+                    )
+
+                    HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp), color = SoftBackground)
+
+                    // Manager Option 4: Change Contribution Rates
+                    PermissionToggleRow(
+                        title = if (lang == Language.BN) "চাঁদার হার পরিবর্তন করা" else "Change Contribution Rates",
+                        subtitle = if (lang == Language.BN) "ম্যানেজার কোনো সদস্যের মাসিক চাঁদার পরিমাণ বদলাতে পারবে" else "Allow manager to modify member monthly dues",
+                        isChecked = allowManagerRateChange,
+                        onCheckedChange = { allowManagerRateChange = it }
+                    )
                 }
             }
         }
 
-        // Audit Logs & Security Summary
+        // 2. MEMBER ROLE VISIBILITY & PRIVACY MATRIX
+        item {
+            Card(
+                shape = RoundedCornerShape(16.dp),
+                colors = CardDefaults.cardColors(containerColor = SurfaceWhite),
+                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(Icons.Default.Visibility, contentDescription = null, tint = PrimaryGreen)
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = if (lang == Language.BN) "মেম্বার রোল প্রাইভেসি ও ভিউ সেটিংস" else "Member Privacy & Visibility Controls",
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 15.sp,
+                            color = PrimaryGreen
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    // Member Option 1: Show Member Names Publicly
+                    PermissionToggleRow(
+                        title = if (lang == Language.BN) "তালিকায় সদস্যের নাম প্রকাশ করা" else "Show Member Names Publicly",
+                        subtitle = if (lang == Language.BN) "পাবলিক ট্রানজেকশনে সদস্যের নাম দৃশ্যমান থাকবে" else "Display full member names in payment logs",
+                        isChecked = showMemberNamesPublicly,
+                        onCheckedChange = { showMemberNamesPublicly = it }
+                    )
+
+                    HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp), color = SoftBackground)
+
+                    // Member Option 2: Show Donation Amounts Publicly
+                    PermissionToggleRow(
+                        title = if (lang == Language.BN) "অনুদান ও চাঁদার টাকা প্রকাশ করা" else "Show Donation Amounts Publicly",
+                        subtitle = if (lang == Language.BN) "অন্য সদস্যরা জমা দেওয়া টাকার পরিমাণ দেখতে পাবে" else "Allow members to see public transaction amounts",
+                        isChecked = showDonationAmountsPublicly,
+                        onCheckedChange = { showDonationAmountsPublicly = it }
+                    )
+
+                    HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp), color = SoftBackground)
+
+                    // Member Option 3: Show Org Available Balance
+                    PermissionToggleRow(
+                        title = if (lang == Language.BN) "সংগঠনের মোট ব্যালেন্স দেখানো" else "Show Org Available Balance",
+                        subtitle = if (lang == Language.BN) "সদস্য ড্যাশবোর্ডে ব্যাংকের বর্তমান ব্যালেন্স দেখাবে" else "Display live available balance on member dashboard",
+                        isChecked = showOrgBalanceToMembers,
+                        onCheckedChange = { showOrgBalanceToMembers = it }
+                    )
+
+                    HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp), color = SoftBackground)
+
+                    // Member Option 4: Export PDF/Excel Financial Reports
+                    PermissionToggleRow(
+                        title = if (lang == Language.BN) "আর্থিক রিপোর্ট ডাউনলোড করা" else "Export Financial Statements (PDF/Excel)",
+                        subtitle = if (lang == Language.BN) "সাধারণ সদস্যরা বার্ষিক হিসাবের পিডিএফ ডাউনলোড করতে পারবে" else "Allow members to download financial statements",
+                        isChecked = allowMemberReportExport,
+                        onCheckedChange = { allowMemberReportExport = it }
+                    )
+                }
+            }
+        }
+
+        // 3. SECURITY AUDIT LOGS SUMMARY
         item {
             Card(
                 shape = RoundedCornerShape(16.dp),
@@ -895,7 +877,7 @@ fun AdminSettingsScreen() {
                         Icon(Icons.Default.History, contentDescription = null, tint = StatusInfo)
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
-                            text = if (lang == Language.BN) "সিকিউরিটি অডিট ট্রেইল ও অ্যাক্টিভিটি লগ" else "Security Audit Logs & History",
+                            text = if (lang == Language.BN) "সিকিউরিটি অডিট ট্রেইল ও পারমিশন লগ" else "Security Audit Logs & History",
                             fontWeight = FontWeight.Bold,
                             fontSize = 15.sp,
                             color = PrimaryGreen
@@ -905,8 +887,10 @@ fun AdminSettingsScreen() {
                     Spacer(modifier = Modifier.height(10.dp))
 
                     Text(
-                        text = if (lang == Language.BN) "• ২০ ফেব্রু ২০২৫ - Md. Eliyas Akondo (Admin) দ্বারা নতুন মেম্বার তৈরি করা হয়েছে\n• ১৯ ফেব্রু ২০২৫ - ৳1500 টাকা পেমেন্ট রসিদ #REC-9988 এপ্রুভ করা হয়েছে\n• ১৮ ফেব্রু ২০২৫ - মেম্বার MEM-1004 এর মাসিক চাঁদা ৳1000 সেট করা হয়েছে"
-                        else "• Feb 20, 2025 - New Member created by Md. Eliyas Akondo (Admin)\n• Feb 19, 2025 - Payment Receipt #REC-9988 approved\n• Feb 18, 2025 - Monthly rate set to ৳1000 for MEM-1004",
+                        text = if (lang == Language.BN)
+                            "• ২০ ফেব্রু ২০২৫ - Md. Eliyas Akondo (Admin) দ্বারা নতুন মেম্বার তৈরি করা হয়েছে\n• ১৯ ফেব্রু ২০২৫ - ম্যানেজার রোলকে খরচ যুক্ত করার অনুমতি দেওয়া হয়েছে\n• ১৮ ফেব্রু ২০২৫ - মেম্বারদের জন্য ফান্ড ব্যালেন্স দৃশ্যমানতা টগল আপডেট করা হয়েছে"
+                        else
+                            "• Feb 20, 2025 - New Member created by Md. Eliyas Akondo (Admin)\n• Feb 19, 2025 - Granted Manager role permission to record expenses\n• Feb 18, 2025 - Updated public fund balance visibility setting for members",
                         fontSize = 11.sp,
                         color = TextSecondary,
                         lineHeight = 18.sp
@@ -915,7 +899,7 @@ fun AdminSettingsScreen() {
             }
         }
 
-        // Data Backup & Export Section
+        // Export All Data Button
         item {
             Button(
                 onClick = { },
@@ -926,7 +910,7 @@ fun AdminSettingsScreen() {
                 Icon(Icons.Default.Download, contentDescription = null)
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = if (lang == Language.BN) "সংগঠনের আর্থিক লেজার এক্সপোর্ট করুন (Excel/PDF)" else "Export Complete Org Financial Ledger (PDF/Excel)",
+                    text = if (lang == Language.BN) "সম্পূর্ণ পারমিশন ও ফিন্যান্সিয়াল লেজার ব্যাকআপ নিন" else "Backup All Permissions & Ledger Data (PDF/Excel)",
                     fontSize = 13.sp,
                     fontWeight = FontWeight.Bold
                 )
@@ -934,4 +918,43 @@ fun AdminSettingsScreen() {
         }
     }
 }
+
+@Composable
+private fun PermissionToggleRow(
+    title: String,
+    subtitle: String,
+    isChecked: Boolean,
+    onCheckedChange: (Boolean) -> Unit
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                text = title,
+                fontWeight = FontWeight.SemiBold,
+                fontSize = 13.sp,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+            Text(
+                text = subtitle,
+                fontSize = 11.sp,
+                color = TextSecondary
+            )
+        }
+        Switch(
+            checked = isChecked,
+            onCheckedChange = onCheckedChange,
+            colors = SwitchDefaults.colors(
+                checkedThumbColor = SurfaceWhite,
+                checkedTrackColor = PrimaryGreen,
+                uncheckedThumbColor = SurfaceWhite,
+                uncheckedTrackColor = Color.LightGray
+            )
+        )
+    }
+}
+
 
