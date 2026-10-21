@@ -129,6 +129,13 @@ fun MainAppContent() {
                         onSuccess = { showRecordPaymentModal = false }
                     )
                 }
+
+                if (showAddMemberModal) {
+                    AddMemberModal(
+                        onDismiss = { showAddMemberModal = false },
+                        onSuccess = { showAddMemberModal = false }
+                    )
+                }
             }
         }
     }

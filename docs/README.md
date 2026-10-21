@@ -29,6 +29,4 @@
 
 > [!IMPORTANT]
 > **Core Architectural Guarantees:**
-> 1. **Clean Architecture Isolation:** UI Composables in `presentation/` and Domain Use Cases in `domain/` are 100% decoupled from the database engine.
-> 2. **Bilingual Native Support:** Every UI screen dynamically re-renders all text, numbers, dates, and currency symbols between Bangla (`বাংলা`) and English.
-> 3. **Offline-First Resilience:** Instant screen rendering from device local Room Database with background network synchronization to Supabase PostgreSQL.
+> w
