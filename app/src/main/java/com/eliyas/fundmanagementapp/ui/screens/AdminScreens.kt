@@ -723,10 +723,76 @@ fun AdminSettingsScreen() {
                 color = PrimaryGreen
             )
             Text(
-                text = if (lang == Language.BN) "ম্যানেজার ও মেম্বার রোলগুলোর জন্য আইসোলেটেড পারমিশন সেটআপ" else "Configure Role-Isolated Permissions for Manager and Member Roles",
+                text = if (lang == Language.BN) "সংগঠনের প্রোফাইল, ফিন্যান্সিয়াল পলিসি ও পারমিশন কন্ট্রোল" else "Configure Organization Profile, Financial Rules & Permissions",
                 fontSize = 12.sp,
                 color = TextSecondary
             )
+        }
+
+        // 1. ORGANIZATION PROFILE & SYSTEM INFO CARD
+        item {
+            Card(
+                shape = RoundedCornerShape(16.dp),
+                colors = CardDefaults.cardColors(containerColor = SurfaceWhite),
+                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(Icons.Default.Business, contentDescription = null, tint = PrimaryGreen)
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = if (lang == Language.BN) "সংগঠনের প্রোফাইল ও পরিচিতি" else "Organization Profile & Info",
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 15.sp,
+                            color = PrimaryGreen
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    Text(
+                        text = if (lang == Language.BN) "• সংগঠনের নাম: তহবিল ব্যবস্থাপনা সামাজিক সংগঠন\n• রেজিস্ট্রেশন নম্বর: REG-2025-88901\n• অর্থবছর: ২০২৫ - ২০২৬\n• কারেন্সি চিহ্ন: ৳ (BDT)\n• ইমেইল: info@fundmanagement.org.bd"
+                        else "• Org Name: Member Contribution & Donation System\n• Reg No: REG-2025-88901\n• Fiscal Year: 2025 - 2026\n• Currency: ৳ (BDT)\n• Email: info@fundmanagement.org.bd",
+                        fontSize = 12.sp,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        lineHeight = 20.sp
+                    )
+                }
+            }
+        }
+
+        // 2. FINANCIAL POLICY & DUES RULES
+        item {
+            Card(
+                shape = RoundedCornerShape(16.dp),
+                colors = CardDefaults.cardColors(containerColor = SurfaceWhite),
+                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(Icons.Default.AccountBalanceWallet, contentDescription = null, tint = StatusInfo)
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = if (lang == Language.BN) "আর্থিক পলিসি ও অটো-অ্যালকেশন রুলস" else "Financial Policy & Allocation Rules",
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 15.sp,
+                            color = PrimaryGreen
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    Text(
+                        text = if (lang == Language.BN) "• ডিফল্ট চাঁদার হার: ৳১,০০০ / মাস\n• অতিরিক্ত টাকা জমা দিলে স্বয়ংক্রিয়ভাবে অনুদান ফান্ডে যাবে\n• আংশিক পেমেন্ট দিলে বাকি টাকা বকেয়া (Due) হিসেবে ট্র্যাক থাকবে\n• বকেয়া গ্রেস পিরিয়ড: ১০ দিন"
+                        else "• Default Monthly Rate: ৳1,000 / month\n• Excess payments automatically route to Extra Donation fund\n• Partial payments accumulate until full balance is paid\n• Overdue grace period: 10 days",
+                        fontSize = 12.sp,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        lineHeight = 20.sp
+                    )
+                }
+            }
         }
 
         // 1. MANAGER ROLE PERMISSIONS MATRIX (Isolated to Manager Role)
