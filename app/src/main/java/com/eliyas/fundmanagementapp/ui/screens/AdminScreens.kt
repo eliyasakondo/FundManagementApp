@@ -705,17 +705,8 @@ fun AddMemberModalPreview() {
 @Composable
 fun AdminSettingsScreen() {
     val lang by OrganizationRepository.currentLanguage.collectAsState()
-
-    // Granular RBAC Permissions Flags State
-    var allowManagerPaymentRecord by remember { mutableStateOf(true) }
-    var allowManagerApprovePayment by remember { mutableStateOf(false) }
-    var allowManagerExpenseRecord by remember { mutableStateOf(true) }
-    var allowManagerRateChange by remember { mutableStateOf(false) }
-
-    var showMemberNamesPublicly by remember { mutableStateOf(true) }
-    var showDonationAmountsPublicly by remember { mutableStateOf(true) }
-    var showOrgBalanceToMembers by remember { mutableStateOf(true) }
-    var allowMemberReportExport by remember { mutableStateOf(false) }
+    val managerPerms by OrganizationRepository.managerPermissions.collectAsState()
+    val privacySettings by OrganizationRepository.privacySettings.collectAsState()
 
     LazyColumn(
         modifier = Modifier
@@ -732,13 +723,13 @@ fun AdminSettingsScreen() {
                 color = PrimaryGreen
             )
             Text(
-                text = if (lang == Language.BN) "ম্যানেজার ও মেম্বারদের জন্য গ্র্যানুলার আরবিএসি (RBAC) এক্সেস সেটিংস" else "Configure Granular RBAC Permissions for Manager and Member Roles",
+                text = if (lang == Language.BN) "ম্যানেজার ও মেম্বার রোলগুলোর জন্য আইসোলেটেড পারমিশন সেটআপ" else "Configure Role-Isolated Permissions for Manager and Member Roles",
                 fontSize = 12.sp,
                 color = TextSecondary
             )
         }
 
-        // 1. MANAGER ROLE PERMISSIONS MATRIX
+        // 1. MANAGER ROLE PERMISSIONS MATRIX (Isolated to Manager Role)
         item {
             Card(
                 shape = RoundedCornerShape(16.dp),
@@ -751,7 +742,7 @@ fun AdminSettingsScreen() {
                         Icon(Icons.Default.Security, contentDescription = null, tint = WarmGold)
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
-                            text = if (lang == Language.BN) "ম্যানেজার রোল পারমিশন সেটিংস" else "Manager Role Permissions Matrix",
+                            text = if (lang == Language.BN) "ম্যানেজার রোল পারমিশন সেটিংস (Manager Role Only)" else "Manager Role Permissions Matrix",
                             fontWeight = FontWeight.Bold,
                             fontSize = 15.sp,
                             color = PrimaryGreen
@@ -760,48 +751,56 @@ fun AdminSettingsScreen() {
 
                     Spacer(modifier = Modifier.height(12.dp))
 
-                    // Manager Option 1: Record Payments
+                    // Manager Option 1: Record Expenses
                     PermissionToggleRow(
-                        title = if (lang == Language.BN) "অফলাইন পেমেন্ট এন্ট্রি দেওয়া" else "Record Member Payments",
-                        subtitle = if (lang == Language.BN) "ম্যানেজার ম্যানুয়াল পেমেন্ট রসিদ তৈরি করতে পারবে" else "Allow manager to log offline contribution receipts",
-                        isChecked = allowManagerPaymentRecord,
-                        onCheckedChange = { allowManagerPaymentRecord = it }
+                        title = if (lang == Language.BN) "সংগঠনের খরচ যুক্ত করার অনুমতি" else "Allow Managers to Record Expenses",
+                        subtitle = if (lang == Language.BN) "বন্ধ করলে ম্যানেজার ভিউতে খরচ অপশন থাকবে না (এডমিনে প্রভাব ফেলবে না)" else "Disabling removes expense entry ONLY for Manager role",
+                        isChecked = managerPerms.canAddExpense,
+                        onCheckedChange = { isChecked ->
+                            OrganizationRepository.updateManagerPermissions(managerPerms.copy(canAddExpense = isChecked))
+                        }
                     )
 
                     HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp), color = SoftBackground)
 
                     // Manager Option 2: Approve Payments Directly
                     PermissionToggleRow(
-                        title = if (lang == Language.BN) "পেমেন্ট সরাসরি অনুমোদন করা" else "Approve Payments Directly",
-                        subtitle = if (lang == Language.BN) "এডমিন এপ্রুভাল ছাড়াই পেমেন্ট কনফার্ম হবে" else "Manager entries bypass Admin approval queue",
-                        isChecked = allowManagerApprovePayment,
-                        onCheckedChange = { allowManagerApprovePayment = it }
+                        title = if (lang == Language.BN) "পেমেন্ট সরাসরি অনুমোদন করার অনুমতি" else "Allow Managers to Approve Payments",
+                        subtitle = if (lang == Language.BN) "বন্ধ করলে ম্যানেজারের এন্ট্রি এডমিন এপ্রুভালের জন্য পেন্ডিং থাকবে" else "Disabling requires Admin approval for Manager payment logs",
+                        isChecked = managerPerms.canApprovePayments,
+                        onCheckedChange = { isChecked ->
+                            OrganizationRepository.updateManagerPermissions(managerPerms.copy(canApprovePayments = isChecked))
+                        }
                     )
 
                     HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp), color = SoftBackground)
 
-                    // Manager Option 3: Record Expenses
+                    // Manager Option 3: View All Reports
                     PermissionToggleRow(
-                        title = if (lang == Language.BN) "সংগঠনের খরচ যুক্ত করা" else "Record Organization Expenses",
-                        subtitle = if (lang == Language.BN) "ম্যানেজার দৈনন্দিন খরচের ভাউচার এন্ট্রি দিতে পারবে" else "Allow manager to enter expense records",
-                        isChecked = allowManagerExpenseRecord,
-                        onCheckedChange = { allowManagerExpenseRecord = it }
+                        title = if (lang == Language.BN) "সকল আর্থিক রিপোর্ট দেখার অনুমতি" else "Allow Managers to View All Reports",
+                        subtitle = if (lang == Language.BN) "বন্ধ করলে ম্যানেজাররা বিস্তারিত রিপোর্ট দেখতে পারবে না" else "Disabling restricts detailed report screens for Manager role",
+                        isChecked = managerPerms.canViewAllReports,
+                        onCheckedChange = { isChecked ->
+                            OrganizationRepository.updateManagerPermissions(managerPerms.copy(canViewAllReports = isChecked))
+                        }
                     )
 
                     HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp), color = SoftBackground)
 
-                    // Manager Option 4: Change Contribution Rates
+                    // Manager Option 4: Send Notifications
                     PermissionToggleRow(
-                        title = if (lang == Language.BN) "চাঁদার হার পরিবর্তন করা" else "Change Contribution Rates",
-                        subtitle = if (lang == Language.BN) "ম্যানেজার কোনো সদস্যের মাসিক চাঁদার পরিমাণ বদলাতে পারবে" else "Allow manager to modify member monthly dues",
-                        isChecked = allowManagerRateChange,
-                        onCheckedChange = { allowManagerRateChange = it }
+                        title = if (lang == Language.BN) "সদস্যদের নোটিফিকেশন পাঠানোর অনুমতি" else "Allow Managers to Send Notifications",
+                        subtitle = if (lang == Language.BN) "বন্ধ করলে ম্যানেজাররা নোটিফিকেশন ও বার্তা পাঠাতে পারবে না" else "Disabling restricts broadcast notices for Manager role",
+                        isChecked = managerPerms.canSendNotification,
+                        onCheckedChange = { isChecked ->
+                            OrganizationRepository.updateManagerPermissions(managerPerms.copy(canSendNotification = isChecked))
+                        }
                     )
                 }
             }
         }
 
-        // 2. MEMBER ROLE VISIBILITY & PRIVACY MATRIX
+        // 2. MEMBER ROLE VISIBILITY & PRIVACY MATRIX (Isolated to Member Role)
         item {
             Card(
                 shape = RoundedCornerShape(16.dp),
@@ -814,7 +813,7 @@ fun AdminSettingsScreen() {
                         Icon(Icons.Default.Visibility, contentDescription = null, tint = PrimaryGreen)
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
-                            text = if (lang == Language.BN) "মেম্বার রোল প্রাইভেসি ও ভিউ সেটিংস" else "Member Privacy & Visibility Controls",
+                            text = if (lang == Language.BN) "মেম্বার রোল প্রাইভেসি ও ভিউ সেটিংস (Member Role Only)" else "Member Privacy Controls",
                             fontWeight = FontWeight.Bold,
                             fontSize = 15.sp,
                             color = PrimaryGreen
@@ -826,39 +825,35 @@ fun AdminSettingsScreen() {
                     // Member Option 1: Show Member Names Publicly
                     PermissionToggleRow(
                         title = if (lang == Language.BN) "তালিকায় সদস্যের নাম প্রকাশ করা" else "Show Member Names Publicly",
-                        subtitle = if (lang == Language.BN) "পাবলিক ট্রানজেকশনে সদস্যের নাম দৃশ্যমান থাকবে" else "Display full member names in payment logs",
-                        isChecked = showMemberNamesPublicly,
-                        onCheckedChange = { showMemberNamesPublicly = it }
+                        subtitle = if (lang == Language.BN) "বন্ধ করলে মেম্বার ভিউতে নামগুলো গোপন থাকবে" else "Hides member names ONLY in Member role view",
+                        isChecked = privacySettings.showMemberName,
+                        onCheckedChange = { isChecked ->
+                            OrganizationRepository.updatePrivacySettings(privacySettings.copy(showMemberName = isChecked))
+                        }
                     )
 
                     HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp), color = SoftBackground)
 
-                    // Member Option 2: Show Donation Amounts Publicly
+                    // Member Option 2: Show Amounts Publicly
                     PermissionToggleRow(
                         title = if (lang == Language.BN) "অনুদান ও চাঁদার টাকা প্রকাশ করা" else "Show Donation Amounts Publicly",
-                        subtitle = if (lang == Language.BN) "অন্য সদস্যরা জমা দেওয়া টাকার পরিমাণ দেখতে পাবে" else "Allow members to see public transaction amounts",
-                        isChecked = showDonationAmountsPublicly,
-                        onCheckedChange = { showDonationAmountsPublicly = it }
+                        subtitle = if (lang == Language.BN) "বন্ধ করলে মেম্বাররা টাকার পরিমাণ দেখতে পাবে না" else "Hides transaction amounts ONLY in Member role view",
+                        isChecked = privacySettings.showAmount,
+                        onCheckedChange = { isChecked ->
+                            OrganizationRepository.updatePrivacySettings(privacySettings.copy(showAmount = isChecked))
+                        }
                     )
 
                     HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp), color = SoftBackground)
 
-                    // Member Option 3: Show Org Available Balance
+                    // Member Option 3: Full Contribution History
                     PermissionToggleRow(
-                        title = if (lang == Language.BN) "সংগঠনের মোট ব্যালেন্স দেখানো" else "Show Org Available Balance",
-                        subtitle = if (lang == Language.BN) "সদস্য ড্যাশবোর্ডে ব্যাংকের বর্তমান ব্যালেন্স দেখাবে" else "Display live available balance on member dashboard",
-                        isChecked = showOrgBalanceToMembers,
-                        onCheckedChange = { showOrgBalanceToMembers = it }
-                    )
-
-                    HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp), color = SoftBackground)
-
-                    // Member Option 4: Export PDF/Excel Financial Reports
-                    PermissionToggleRow(
-                        title = if (lang == Language.BN) "আর্থিক রিপোর্ট ডাউনলোড করা" else "Export Financial Statements (PDF/Excel)",
-                        subtitle = if (lang == Language.BN) "সাধারণ সদস্যরা বার্ষিক হিসাবের পিডিএফ ডাউনলোড করতে পারবে" else "Allow members to download financial statements",
-                        isChecked = allowMemberReportExport,
-                        onCheckedChange = { allowMemberReportExport = it }
+                        title = if (lang == Language.BN) "সম্পূর্ণ কন্ট্রিবিউশন হিস্ট্রি দেখানো" else "Show Full Contribution History",
+                        subtitle = if (lang == Language.BN) "মেম্বাররা বিগত বছরের সম্পূর্ণ চাঁদার হিসাব দেখতে পাবে" else "Allow members to browse full historical logs",
+                        isChecked = privacySettings.showFullContributionHistory,
+                        onCheckedChange = { isChecked ->
+                            OrganizationRepository.updatePrivacySettings(privacySettings.copy(showFullContributionHistory = isChecked))
+                        }
                     )
                 }
             }
