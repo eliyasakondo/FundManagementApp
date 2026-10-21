@@ -702,3 +702,236 @@ fun AddMemberModalPreview() {
     }
 }
 
+@Composable
+fun AdminSettingsScreen() {
+    val lang by OrganizationRepository.currentLanguage.collectAsState()
+
+    var showMemberNameByDefault by remember { mutableStateOf(true) }
+    var showDonationAmountsPublicly by remember { mutableStateOf(true) }
+    var allowManagerExpenseRecording by remember { mutableStateOf(true) }
+    var requireAdminApprovalForPayments by remember { mutableStateOf(false) }
+
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(SoftBackground)
+            .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        item {
+            Text(
+                text = if (lang == Language.BN) "এডমিন সেটিংস ও সিস্টেম কনফিগারেশন" else "Admin System Settings & Privacy Control",
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Bold,
+                color = PrimaryGreen
+            )
+            Text(
+                text = if (lang == Language.BN) "সংগঠনের প্রাইভেসি, ম্যানেজার পারমিশন ও ব্যাকআপ সেটিংস" else "Configure Privacy Rules, Manager Permissions & System Data",
+                fontSize = 12.sp,
+                color = TextSecondary
+            )
+        }
+
+        // Privacy & Member Visibility Section
+        item {
+            Card(
+                shape = RoundedCornerShape(16.dp),
+                colors = CardDefaults.cardColors(containerColor = SurfaceWhite),
+                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(Icons.Default.Visibility, contentDescription = null, tint = PrimaryGreen)
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = if (lang == Language.BN) "প্রাইভেসি ও সদস্যের তথ্য দৃশ্যমানতা" else "Privacy & Member Visibility Rules",
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 15.sp,
+                            color = PrimaryGreen
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                text = if (lang == Language.BN) "সদস্যের নাম প্রকাশ করুন" else "Show Member Name Publicly",
+                                fontWeight = FontWeight.SemiBold,
+                                fontSize = 13.sp
+                            )
+                            Text(
+                                text = if (lang == Language.BN) "পেমেন্ট তালিকায় সদস্যের নাম দৃশ্যমান থাকবে" else "Display member name in public payment histories",
+                                fontSize = 11.sp,
+                                color = TextSecondary
+                            )
+                        }
+                        Switch(
+                            checked = showMemberNameByDefault,
+                            onCheckedChange = { showMemberNameByDefault = it },
+                            colors = SwitchDefaults.colors(checkedThumbColor = SurfaceWhite, checkedTrackColor = PrimaryGreen)
+                        )
+                    }
+
+                    Divider(modifier = Modifier.padding(vertical = 10.dp), color = SoftBackground)
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                text = if (lang == Language.BN) "অনুদান ও চাঁদার পরিমাণ প্রকাশ করুন" else "Show Donation Amounts Publicly",
+                                fontWeight = FontWeight.SemiBold,
+                                fontSize = 13.sp
+                            )
+                            Text(
+                                text = if (lang == Language.BN) "অন্যান্য সদস্যরা জমার টাকার পরিমাণ দেখতে পাবে" else "Allow other members to see payment amounts",
+                                fontSize = 11.sp,
+                                color = TextSecondary
+                            )
+                        }
+                        Switch(
+                            checked = showDonationAmountsPublicly,
+                            onCheckedChange = { showDonationAmountsPublicly = it },
+                            colors = SwitchDefaults.colors(checkedThumbColor = SurfaceWhite, checkedTrackColor = PrimaryGreen)
+                        )
+                    }
+                }
+            }
+        }
+
+        // Manager Permissions Section
+        item {
+            Card(
+                shape = RoundedCornerShape(16.dp),
+                colors = CardDefaults.cardColors(containerColor = SurfaceWhite),
+                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(Icons.Default.Security, contentDescription = null, tint = WarmGold)
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = if (lang == Language.BN) "ম্যানেজার পারমিশন ও এক্সেস লেভেল" else "Manager Permissions & Controls",
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 15.sp,
+                            color = PrimaryGreen
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                text = if (lang == Language.BN) "ম্যানেজারকে খরচ যুক্ত করার অনুমতি দিন" else "Allow Managers to Record Expenses",
+                                fontWeight = FontWeight.SemiBold,
+                                fontSize = 13.sp
+                            )
+                            Text(
+                                text = if (lang == Language.BN) "ম্যানেজার সংগঠনের দৈনন্দিন খরচ এন্ট্রি দিতে পারবে" else "Managers can submit expense records",
+                                fontSize = 11.sp,
+                                color = TextSecondary
+                            )
+                        }
+                        Switch(
+                            checked = allowManagerExpenseRecording,
+                            onCheckedChange = { allowManagerExpenseRecording = it },
+                            colors = SwitchDefaults.colors(checkedThumbColor = SurfaceWhite, checkedTrackColor = PrimaryGreen)
+                        )
+                    }
+
+                    Divider(modifier = Modifier.padding(vertical = 10.dp), color = SoftBackground)
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                text = if (lang == Language.BN) "পেমেন্ট এন্ট্রিতে এডমিন অনুমোদন বাধ্যতামূলক" else "Require Admin Approval for Payments",
+                                fontWeight = FontWeight.SemiBold,
+                                fontSize = 13.sp
+                            )
+                            Text(
+                                text = if (lang == Language.BN) "ম্যানেজারের পেমেন্ট এন্ট্রি এডমিন এপ্রুভ না করা পর্যন্ত পেন্ডিং থাকবে" else "Manager payment entries require Admin approval",
+                                fontSize = 11.sp,
+                                color = TextSecondary
+                            )
+                        }
+                        Switch(
+                            checked = requireAdminApprovalForPayments,
+                            onCheckedChange = { requireAdminApprovalForPayments = it },
+                            colors = SwitchDefaults.colors(checkedThumbColor = SurfaceWhite, checkedTrackColor = PrimaryGreen)
+                        )
+                    }
+                }
+            }
+        }
+
+        // Audit Logs & Security Summary
+        item {
+            Card(
+                shape = RoundedCornerShape(16.dp),
+                colors = CardDefaults.cardColors(containerColor = SurfaceWhite),
+                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(Icons.Default.History, contentDescription = null, tint = StatusInfo)
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = if (lang == Language.BN) "সিকিউরিটি অডিট ট্রেইল ও অ্যাক্টিভিটি লগ" else "Security Audit Logs & History",
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 15.sp,
+                            color = PrimaryGreen
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(10.dp))
+
+                    Text(
+                        text = if (lang == Language.BN) "• ২০ ফেব্রু ২০২৫ - Md. Eliyas Akondo (Admin) দ্বারা নতুন মেম্বার তৈরি করা হয়েছে\n• ১৯ ফেব্রু ২০২৫ - ৳1500 টাকা পেমেন্ট রসিদ #REC-9988 এপ্রুভ করা হয়েছে\n• ১৮ ফেব্রু ২০২৫ - মেম্বার MEM-1004 এর মাসিক চাঁদা ৳1000 সেট করা হয়েছে"
+                        else "• Feb 20, 2025 - New Member created by Md. Eliyas Akondo (Admin)\n• Feb 19, 2025 - Payment Receipt #REC-9988 approved\n• Feb 18, 2025 - Monthly rate set to ৳1000 for MEM-1004",
+                        fontSize = 11.sp,
+                        color = TextSecondary,
+                        lineHeight = 18.sp
+                    )
+                }
+            }
+        }
+
+        // Data Backup & Export Section
+        item {
+            Button(
+                onClick = { },
+                colors = ButtonDefaults.buttonColors(containerColor = PrimaryGreen),
+                shape = RoundedCornerShape(12.dp),
+                modifier = Modifier.fillMaxWidth().height(48.dp)
+            ) {
+                Icon(Icons.Default.Download, contentDescription = null)
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = if (lang == Language.BN) "সংগঠনের আর্থিক লেজার এক্সপোর্ট করুন (Excel/PDF)" else "Export Complete Org Financial Ledger (PDF/Excel)",
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+        }
+    }
+}
+
