@@ -50,6 +50,9 @@ object OrganizationRepository {
     private val _managerPermissions = MutableStateFlow(ManagerPermissions())
     val managerPermissions: StateFlow<ManagerPermissions> = _managerPermissions.asStateFlow()
 
+    private val _orgProfile = MutableStateFlow(OrganizationProfile())
+    val orgProfile: StateFlow<OrganizationProfile> = _orgProfile.asStateFlow()
+
     init {
         // Load Initial Dummy Data
         val initialMembers = DummyData.generateMembers()
@@ -288,6 +291,10 @@ object OrganizationRepository {
 
     fun updateManagerPermissions(perms: ManagerPermissions) {
         _managerPermissions.value = perms
+    }
+
+    fun updateOrganizationProfile(profile: OrganizationProfile) {
+        _orgProfile.value = profile
     }
 
     fun resetPassword(memberId: String): String {

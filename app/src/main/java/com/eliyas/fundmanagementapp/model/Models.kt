@@ -172,3 +172,14 @@ data class ManagerPermissions(
     val canViewAllReports: Boolean = true,
     val canApprovePayments: Boolean = true
 )
+
+data class OrganizationProfile(
+    val nameBn: String = "তহবিল ব্যবস্থাপনা সামাজিক সংগঠন",
+    val nameEn: String = "Member Contribution & Fund Management System",
+    val regNumber: String = "REG-2025-88901",
+    val fiscalYear: String = "2025 - 2026",
+    val currencySymbol: String = "৳ (BDT)",
+    val contactEmail: String = "info@fundmanagement.org.bd",
+    val defaultMonthlyRate: Double = 1000.0,
+    val gracePeriodDays: Int = 10
+)
