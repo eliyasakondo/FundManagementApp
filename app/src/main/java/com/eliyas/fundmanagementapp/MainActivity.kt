@@ -108,10 +108,8 @@ fun MainAppContent() {
                         "members" -> MemberManagementScreen(
                             onOpenAddMember = { showAddMemberModal = true }
                         )
-                        "payments" -> AdminDashboardScreen(
-                            onNavigate = { currentTab = it },
-                            onOpenRecordPayment = { showRecordPaymentModal = true },
-                            onOpenAddMember = { showAddMemberModal = true }
+                        "payments" -> AdminPaymentsScreen(
+                            onOpenRecordPayment = { showRecordPaymentModal = true }
                         )
                         "reports" -> AllMembersContributionHistoryScreen()
                         "settings" -> AdminSettingsScreen()
