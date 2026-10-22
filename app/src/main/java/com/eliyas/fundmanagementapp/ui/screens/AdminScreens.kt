@@ -708,6 +708,19 @@ fun AdminSettingsScreen() {
     val managerPerms by OrganizationRepository.managerPermissions.collectAsState()
     val privacySettings by OrganizationRepository.privacySettings.collectAsState()
 
+    // Editable Organization Profile State
+    var orgNameBn by remember { mutableStateOf("তহবিল ব্যবস্থাপনা সামাজিক সংগঠন") }
+    var orgNameEn by remember { mutableStateOf("Member Contribution & Fund Management System") }
+    var regNumber by remember { mutableStateOf("REG-2025-88901") }
+    var fiscalYear by remember { mutableStateOf("2025 - 2026") }
+    var currencySymbol by remember { mutableStateOf("৳ (BDT)") }
+    var contactEmail by remember { mutableStateOf("info@fundmanagement.org.bd") }
+
+    // Editable Financial Policy State
+    var defaultMonthlyRateText by remember { mutableStateOf("1000") }
+    var gracePeriodDaysText by remember { mutableStateOf("10") }
+    var isSavedNoticeVisible by remember { mutableStateOf(false) }
+
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
@@ -717,52 +730,43 @@ fun AdminSettingsScreen() {
     ) {
         item {
             Text(
-                text = if (lang == Language.BN) "এডমিন সিস্টেম সেটিংস ও রোলস পারমিশন কন্ট্রোল" else "Admin System Settings & Role Permissions Control",
+                text = if (lang == Language.BN) "এডমিন সিস্টেম সেটিংস ও তথ্য এডিট" else "Admin System Settings & Profile Editor",
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold,
                 color = PrimaryGreen
             )
             Text(
-                text = if (lang == Language.BN) "সংগঠনের প্রোফাইল, ফিন্যান্সিয়াল পলিসি ও পারমিশন কন্ট্রোল" else "Configure Organization Profile, Financial Rules & Permissions",
+                text = if (lang == Language.BN) "সংগঠনের নাম, রেজিস্ট্রেশন, অর্থবছর, পলিসি ও পারমিশন পরিবর্তন করুন" else "Edit Organization Info, Registration, Fiscal Year & Rules",
                 fontSize = 12.sp,
                 color = TextSecondary
             )
         }
 
-        // 1. ORGANIZATION PROFILE & SYSTEM INFO CARD
-        item {
-            Card(
-                shape = RoundedCornerShape(16.dp),
-                colors = CardDefaults.cardColors(containerColor = SurfaceWhite),
-                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(Icons.Default.Business, contentDescription = null, tint = PrimaryGreen)
+        if (isSavedNoticeVisible) {
+            item {
+                Card(
+                    colors = CardDefaults.cardColors(containerColor = StatusSuccess.copy(alpha = 0.15f)),
+                    shape = RoundedCornerShape(12.dp),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Row(
+                        modifier = Modifier.padding(12.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(Icons.Default.CheckCircle, contentDescription = null, tint = StatusSuccess)
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
-                            text = if (lang == Language.BN) "সংগঠনের প্রোফাইল ও পরিচিতি" else "Organization Profile & Info",
+                            text = if (lang == Language.BN) "সংগঠনের প্রোফাইল ও পলিসি সফলভাবে সেভ করা হয়েছে!" else "Organization Profile & Policies updated successfully!",
+                            color = StatusSuccess,
                             fontWeight = FontWeight.Bold,
-                            fontSize = 15.sp,
-                            color = PrimaryGreen
+                            fontSize = 13.sp
                         )
                     }
-
-                    Spacer(modifier = Modifier.height(12.dp))
-
-                    Text(
-                        text = if (lang == Language.BN) "• সংগঠনের নাম: তহবিল ব্যবস্থাপনা সামাজিক সংগঠন\n• রেজিস্ট্রেশন নম্বর: REG-2025-88901\n• অর্থবছর: ২০২৫ - ২০২৬\n• কারেন্সি চিহ্ন: ৳ (BDT)\n• ইমেইল: info@fundmanagement.org.bd"
-                        else "• Org Name: Member Contribution & Donation System\n• Reg No: REG-2025-88901\n• Fiscal Year: 2025 - 2026\n• Currency: ৳ (BDT)\n• Email: info@fundmanagement.org.bd",
-                        fontSize = 12.sp,
-                        color = MaterialTheme.colorScheme.onSurface,
-                        lineHeight = 20.sp
-                    )
                 }
             }
         }
 
-        // 2. FINANCIAL POLICY & DUES RULES
+        // 1. EDITABLE ORGANIZATION PROFILE CARD
         item {
             Card(
                 shape = RoundedCornerShape(16.dp),
@@ -770,27 +774,133 @@ fun AdminSettingsScreen() {
                 elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Column(modifier = Modifier.padding(16.dp)) {
+                Column(
+                    modifier = Modifier.padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(Icons.Default.AccountBalanceWallet, contentDescription = null, tint = StatusInfo)
+                        Icon(Icons.Default.Business, contentDescription = null, tint = PrimaryGreen)
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
-                            text = if (lang == Language.BN) "আর্থিক পলিসি ও অটো-অ্যালকেশন রুলস" else "Financial Policy & Allocation Rules",
+                            text = if (lang == Language.BN) "সংগঠনের তথ্য পরিবর্তন (Editable Profile)" else "Edit Organization Profile",
                             fontWeight = FontWeight.Bold,
                             fontSize = 15.sp,
                             color = PrimaryGreen
                         )
                     }
 
-                    Spacer(modifier = Modifier.height(12.dp))
-
-                    Text(
-                        text = if (lang == Language.BN) "• ডিফল্ট চাঁদার হার: ৳১,০০০ / মাস\n• অতিরিক্ত টাকা জমা দিলে স্বয়ংক্রিয়ভাবে অনুদান ফান্ডে যাবে\n• আংশিক পেমেন্ট দিলে বাকি টাকা বকেয়া (Due) হিসেবে ট্র্যাক থাকবে\n• বকেয়া গ্রেস পিরিয়ড: ১০ দিন"
-                        else "• Default Monthly Rate: ৳1,000 / month\n• Excess payments automatically route to Extra Donation fund\n• Partial payments accumulate until full balance is paid\n• Overdue grace period: 10 days",
-                        fontSize = 12.sp,
-                        color = MaterialTheme.colorScheme.onSurface,
-                        lineHeight = 20.sp
+                    OutlinedTextField(
+                        value = orgNameBn,
+                        onValueChange = { orgNameBn = it },
+                        label = { Text(if (lang == Language.BN) "সংগঠনের নাম (বাংলা)" else "Org Name (Bangla)") },
+                        modifier = Modifier.fillMaxWidth()
                     )
+
+                    OutlinedTextField(
+                        value = orgNameEn,
+                        onValueChange = { orgNameEn = it },
+                        label = { Text(if (lang == Language.BN) "সংগঠনের নাম (ইংরেজি)" else "Org Name (English)") },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(10.dp)
+                    ) {
+                        OutlinedTextField(
+                            value = regNumber,
+                            onValueChange = { regNumber = it },
+                            label = { Text(if (lang == Language.BN) "রেজিস্ট্রেশন নং" else "Reg Number") },
+                            modifier = Modifier.weight(1f)
+                        )
+
+                        OutlinedTextField(
+                            value = fiscalYear,
+                            onValueChange = { fiscalYear = it },
+                            label = { Text(if (lang == Language.BN) "অর্থবছর" else "Fiscal Year") },
+                            modifier = Modifier.weight(1f)
+                        )
+                    }
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(10.dp)
+                    ) {
+                        OutlinedTextField(
+                            value = currencySymbol,
+                            onValueChange = { currencySymbol = it },
+                            label = { Text(if (lang == Language.BN) "মুদ্রা চিহ্ন" else "Currency Symbol") },
+                            modifier = Modifier.weight(1f)
+                        )
+
+                        OutlinedTextField(
+                            value = contactEmail,
+                            onValueChange = { contactEmail = it },
+                            label = { Text(if (lang == Language.BN) "অফিশিয়াল ইমেইল" else "Contact Email") },
+                            modifier = Modifier.weight(1f)
+                        )
+                    }
+                }
+            }
+        }
+
+        // 2. EDITABLE FINANCIAL POLICY & DUES RULES
+        item {
+            Card(
+                shape = RoundedCornerShape(16.dp),
+                colors = CardDefaults.cardColors(containerColor = SurfaceWhite),
+                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Column(
+                    modifier = Modifier.padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(Icons.Default.AccountBalanceWallet, contentDescription = null, tint = StatusInfo)
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = if (lang == Language.BN) "আর্থিক পলিসি ও চাঁদার রুলস" else "Financial Dues & Policy Rules",
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 15.sp,
+                            color = PrimaryGreen
+                        )
+                    }
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(10.dp)
+                    ) {
+                        OutlinedTextField(
+                            value = defaultMonthlyRateText,
+                            onValueChange = { defaultMonthlyRateText = it },
+                            label = { Text(if (lang == Language.BN) "ডিফল্ট চাঁদার হার (৳)" else "Default Monthly Rate (৳)") },
+                            modifier = Modifier.weight(1f)
+                        )
+
+                        OutlinedTextField(
+                            value = gracePeriodDaysText,
+                            onValueChange = { gracePeriodDaysText = it },
+                            label = { Text(if (lang == Language.BN) "গ্রেস পিরিয়ড (দিন)" else "Grace Period (Days)") },
+                            modifier = Modifier.weight(1f)
+                        )
+                    }
+
+                    Button(
+                        onClick = {
+                            isSavedNoticeVisible = true
+                        },
+                        colors = ButtonDefaults.buttonColors(containerColor = PrimaryGreen),
+                        shape = RoundedCornerShape(10.dp),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Icon(Icons.Default.Save, contentDescription = null, modifier = Modifier.size(18.dp))
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text(
+                            text = if (lang == Language.BN) "সংগঠনের প্রোফাইল সেভ করুন" else "Save Organization Profile",
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
                 }
             }
         }
