@@ -120,3 +120,15 @@
 - **Consequences:**
   - 100% complete navigation menu coverage for Admin, Manager, and Member roles.
   - Dedicated expense voucher logging and categorized expense ledger.
+
+---
+
+## ADR 011: Admin & Manager Individual Member Payment History Ledger
+
+- **Status:** Accepted
+- **Date:** 2026-03-03
+- **Context:** Admins and Managers required the ability to inspect any individual member's month-by-month contribution records (Required, Paid, Due, Status Badges, and Last Payment Date).
+- **Decision:** Enhance `ViewMemberProfileModal.kt` with a Tab Switcher ("Profile Info" $\leftrightarrow$ "Monthly Ledger") bound to `OrganizationRepository.memberHistory` StateFlow.
+- **Consequences:**
+  - Provides instant month-by-month financial breakdown for any selected member.
+  - Zero duplication across Admin and Manager member management views.
