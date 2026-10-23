@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.sp
 import com.eliyas.fundmanagementapp.localization.Strings
 import com.eliyas.fundmanagementapp.model.Language
 import com.eliyas.fundmanagementapp.repository.OrganizationRepository
+import com.eliyas.fundmanagementapp.ui.common.MonthRangeFilterCard
 import com.eliyas.fundmanagementapp.ui.theme.*
 
 @Composable
@@ -28,12 +29,24 @@ fun PaymentsScreen(onOpenRecordPayment: () -> Unit) {
 
     var searchQuery by remember { mutableStateOf("") }
     var selectedFilter by remember { mutableStateOf("ALL") }
+    var startMonth by remember { mutableStateOf("2025-01") }
+    var endMonth by remember { mutableStateOf("2025-12") }
 
-    val totalCollected = receipts.sumOf { it.totalReceived }
-    val totalContribAlloc = receipts.sumOf { it.contributionAmount }
-    val totalDonationAlloc = receipts.sumOf { it.donationAmount }
+    val rangeFilteredReceipts = receipts.filter { receipt ->
+        val covered = receipt.coveredMonths
+        if (covered.isEmpty()) true
+        else {
+            val minCovered = covered.minOrNull() ?: "2025-01"
+            val maxCovered = covered.maxOrNull() ?: "2025-12"
+            minCovered >= startMonth && maxCovered <= endMonth
+        }
+    }
 
-    val filteredReceipts = receipts.filter { receipt ->
+    val totalCollected = rangeFilteredReceipts.sumOf { it.totalReceived }
+    val totalContribAlloc = rangeFilteredReceipts.sumOf { it.contributionAmount }
+    val totalDonationAlloc = rangeFilteredReceipts.sumOf { it.donationAmount }
+
+    val filteredReceipts = rangeFilteredReceipts.filter { receipt ->
         (receipt.memberNameEn.contains(searchQuery, ignoreCase = true) ||
          receipt.memberNameBn.contains(searchQuery, ignoreCase = true) ||
          receipt.memberId.contains(searchQuery, ignoreCase = true) ||
@@ -81,6 +94,19 @@ fun PaymentsScreen(onOpenRecordPayment: () -> Unit) {
             }
         }
 
+        // Interactive Month Range Selector Card
+        item {
+            MonthRangeFilterCard(
+                startMonth = startMonth,
+                endMonth = endMonth,
+                onRangeSelected = { s, e ->
+                    startMonth = s
+                    endMonth = e
+                },
+                lang = lang
+            )
+        }
+
         item {
             Card(
                 shape = RoundedCornerShape(16.dp),
@@ -90,7 +116,7 @@ fun PaymentsScreen(onOpenRecordPayment: () -> Unit) {
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
                     Text(
-                        text = if (lang == Language.BN) "মোট আদায়কৃত তহবিল" else "Total Collected Funds",
+                        text = "${if (lang == Language.BN) "আদায়কৃত তহবিল (" else "Collected Funds ("}${Strings.getMonthName(startMonth, lang)} - ${Strings.getMonthName(endMonth, lang)})",
                         fontSize = 12.sp,
                         color = WarmGold
                     )

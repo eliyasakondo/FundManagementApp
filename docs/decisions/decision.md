@@ -132,3 +132,15 @@
 - **Consequences:**
   - Provides instant month-by-month financial breakdown for any selected member.
   - Zero duplication across Admin and Manager member management views.
+
+---
+
+## ADR 012: Dynamic Month & Date Range Filter Engine for Financial Reports
+
+- **Status:** Accepted
+- **Date:** 2026-03-03
+- **Context:** Financial audits require filtering collection ledgers and summaries by custom month ranges (e.g. Jan 2025 to Jun 2025) rather than viewing static annual totals.
+- **Decision:** Implement `MonthRangeFilterCard.kt` with Start Month & End Month dropdowns and Quick Preset Filter Chips (`All Months`, `Current Month`, `Last 3 Months`, `Last 6 Months`), integrated into `PaymentsScreen.kt` and `ReportsScreen.kt`.
+- **Consequences:**
+  - Dynamic recalculation of total funds collected, contribution portions, and extra donations across custom time periods.
+  - Consistent filtering capabilities for both Admin and Manager roles.
