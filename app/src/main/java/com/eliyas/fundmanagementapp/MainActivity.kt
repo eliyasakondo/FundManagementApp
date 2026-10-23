@@ -35,6 +35,7 @@ import com.eliyas.fundmanagementapp.ui.theme.FundManagementTheme
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        OrganizationRepository.initializeDatabase(applicationContext)
         enableEdgeToEdge()
         setContent {
             FundManagementTheme {

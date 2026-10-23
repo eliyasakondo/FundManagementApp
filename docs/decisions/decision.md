@@ -144,3 +144,15 @@
 - **Consequences:**
   - Dynamic recalculation of total funds collected, contribution portions, and extra donations across custom time periods.
   - Consistent filtering capabilities for both Admin and Manager roles.
+
+---
+
+## ADR 013: Local Room SQLite Database Persistence Wire-Up
+
+- **Status:** Accepted
+- **Date:** 2026-03-03
+- **Context:** Financial records (members, payment receipts, extra donations, expense vouchers) must persist permanently on the Android device across app restarts and reboots without data loss.
+- **Decision:** Wire up `AppDatabase` (Room SQLite) with DAOs (`MemberDao`, `PaymentDao`, `ExpenseDao`, `NotificationDao`) and bind `OrganizationRepository` StateFlows to Room DAOs in background IO coroutines.
+- **Consequences:**
+  - 100% permanent disk storage of all added members, payment logs, and expense vouchers (`fund_management_local.db`).
+  - Automatic fallback database seeding if empty on first app launch.

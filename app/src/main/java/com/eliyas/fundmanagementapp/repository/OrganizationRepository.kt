@@ -1,15 +1,25 @@
 package com.eliyas.fundmanagementapp.repository
 
+import android.content.Context
 import com.eliyas.fundmanagementapp.data.DummyData
+import com.eliyas.fundmanagementapp.data.local.AppDatabase
+import com.eliyas.fundmanagementapp.data.local.DatabaseProvider
+import com.eliyas.fundmanagementapp.data.local.entity.*
 import com.eliyas.fundmanagementapp.model.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
 object OrganizationRepository {
+
+    private val scope = CoroutineScope(Dispatchers.IO)
+    private var db: AppDatabase? = null
 
     private val _currentLanguage = MutableStateFlow(Language.BN)
     val currentLanguage: StateFlow<Language> = _currentLanguage.asStateFlow()
@@ -54,7 +64,7 @@ object OrganizationRepository {
     val orgProfile: StateFlow<OrganizationProfile> = _orgProfile.asStateFlow()
 
     init {
-        // Load Initial Dummy Data
+        // Load Initial Seed Data
         val initialMembers = DummyData.generateMembers()
         _members.value = initialMembers
         _currentMember.value = initialMembers.firstOrNull { it.id == "MEM-1001" } ?: initialMembers.first()
@@ -68,6 +78,38 @@ object OrganizationRepository {
         _expenses.value = DummyData.generateExpenses()
         _notifications.value = DummyData.generateNotifications()
         _messages.value = DummyData.generateMessages()
+    }
+
+    fun initializeDatabase(context: Context) {
+        if (db != null) return
+        db = DatabaseProvider.getDatabase(context)
+
+        scope.launch {
+            db?.let { localDb ->
+                // Collect Room DB Expenses
+                localDb.expenseDao().getAllExpenses().collect { entities ->
+                    if (entities.isNotEmpty()) {
+                        _expenses.value = entities.map { e ->
+                            ExpenseRecord(
+                                id = e.id,
+                                titleEn = e.titleEn,
+                                titleBn = e.titleBn,
+                                category = e.category,
+                                categoryBn = e.categoryBn,
+                                amount = e.amount,
+                                date = e.date,
+                                vendor = e.vendor,
+                                paymentMethod = e.paymentMethod,
+                                description = e.description,
+                                addedBy = e.addedBy,
+                                approvedBy = e.approvedBy,
+                                isPublic = e.isPublic
+                            )
+                        }
+                    }
+                }
+            }
+        }
     }
 
     fun setLanguage(lang: Language) {
@@ -153,10 +195,8 @@ object OrganizationRepository {
             notes = notes
         )
 
-        // Update Payment Receipts
         _paymentReceipts.value = listOf(record) + _paymentReceipts.value
 
-        // Update Member Monthly History
         val currentHist = _memberHistory.value[memberId]?.toMutableList() ?: mutableListOf()
         val perMonthAmount = if (selectedMonths.isNotEmpty()) contribAmount / selectedMonths.size else 0.0
 
@@ -194,7 +234,6 @@ object OrganizationRepository {
         newMap[memberId] = currentHist
         _memberHistory.value = newMap
 
-        // If extra donation
         if (donationAmount > 0) {
             val donRecord = DonationRecord(
                 id = "DON-${6000 + _donations.value.size + 1}",
@@ -213,7 +252,6 @@ object OrganizationRepository {
             _donations.value = listOf(donRecord) + _donations.value
         }
 
-        // Add Notification
         val notif = NotificationItem(
             id = "NOT-${System.currentTimeMillis()}",
             memberId = member.id,
@@ -227,12 +265,34 @@ object OrganizationRepository {
         )
         _notifications.value = listOf(notif) + _notifications.value
 
+        // Persist to Room SQLite
+        scope.launch {
+            db?.let { localDb ->
+                localDb.paymentDao().insertPayment(
+                    PaymentEntity(
+                        id = record.receiptNo,
+                        receiptNumber = record.receiptNo,
+                        memberId = record.memberId,
+                        paymentDate = record.paymentDate,
+                        totalAmountReceived = record.totalReceived,
+                        contributionPortion = record.contributionAmount,
+                        donationPortion = record.donationAmount,
+                        paymentMethod = record.paymentMethod,
+                        transactionReference = record.reference,
+                        recordedBy = record.recordedBy,
+                        approvalStatus = record.status,
+                        notes = record.notes
+                    )
+                )
+            }
+        }
+
         return record
     }
 
     fun addMember(newMember: Member) {
         _members.value = listOf(newMember) + _members.value
-        // Initialize monthly history for new member
+
         val months = listOf("2025-01", "2025-02", "2025-03", "2025-04", "2025-05", "2025-06")
         val recs = months.map {
             MonthlyRecord(it, it, it, newMember.monthlyContribution, 0.0, 0.0, PaymentStatus.UNPAID, null)
@@ -240,6 +300,25 @@ object OrganizationRepository {
         val map = _memberHistory.value.toMutableMap()
         map[newMember.id] = recs
         _memberHistory.value = map
+
+        scope.launch {
+            db?.let { localDb ->
+                localDb.memberDao().insertMember(
+                    MemberEntity(
+                        id = newMember.id,
+                        memberId = newMember.id,
+                        fullNameBn = newMember.nameBn,
+                        fullNameEn = newMember.nameEn,
+                        mobileNumber = newMember.mobile,
+                        altMobileNumber = newMember.altMobile,
+                        email = newMember.email,
+                        designation = newMember.designation,
+                        monthlyContribution = newMember.monthlyContribution,
+                        accountStatus = newMember.status
+                    )
+                )
+            }
+        }
     }
 
     fun updateMonthlyContribution(memberId: String, newAmount: Double, effectiveDate: String) {
@@ -254,6 +333,28 @@ object OrganizationRepository {
 
     fun addExpense(expense: ExpenseRecord) {
         _expenses.value = listOf(expense) + _expenses.value
+
+        scope.launch {
+            db?.let { localDb ->
+                localDb.expenseDao().insertExpense(
+                    ExpenseEntity(
+                        id = expense.id,
+                        titleEn = expense.titleEn,
+                        titleBn = expense.titleBn,
+                        category = expense.category,
+                        categoryBn = expense.categoryBn,
+                        amount = expense.amount,
+                        date = expense.date,
+                        vendor = expense.vendor,
+                        paymentMethod = expense.paymentMethod,
+                        description = expense.description,
+                        addedBy = expense.addedBy,
+                        approvedBy = expense.approvedBy,
+                        isPublic = expense.isPublic
+                    )
+                )
+            }
+        }
     }
 
     fun addIncome(inc: IncomeRecord) {
@@ -283,6 +384,11 @@ object OrganizationRepository {
 
     fun markAllNotificationsRead() {
         _notifications.value = _notifications.value.map { it.copy(isRead = true) }
+        scope.launch {
+            db?.let { localDb ->
+                localDb.notificationDao().markAllRead()
+            }
+        }
     }
 
     fun updatePrivacySettings(settings: PrivacySettings) {
