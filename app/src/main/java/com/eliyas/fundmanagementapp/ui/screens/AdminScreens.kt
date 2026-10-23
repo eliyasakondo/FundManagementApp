@@ -52,7 +52,6 @@ fun AdminDashboardScreen(
     val totalExpenses = expenseList.sumOf { it.amount }
     val balance = totalIncome - totalExpenses
 
-    // Dummy Trend Data for Bar Chart
     val barChartData = listOf(
         Pair(if (lang == Language.BN) "জানু" else "Jan", 320000.0),
         Pair(if (lang == Language.BN) "ফেব্রু" else "Feb", 280000.0),
@@ -62,7 +61,6 @@ fun AdminDashboardScreen(
         Pair(if (lang == Language.BN) "জুন" else "Jun", 380000.0)
     )
 
-    // Donut Chart Data
     val donutData = listOf(
         Triple(if (lang == Language.BN) "মাসিক চাঁদা" else "Contributions", contribTotal, PrimaryGreen),
         Triple(if (lang == Language.BN) "অতিরিক্ত অনুদান" else "Donations", extraDonationsTotal, WarmGold),
@@ -76,7 +74,6 @@ fun AdminDashboardScreen(
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        // Control Panel Banner & Quick Actions
         item {
             Card(
                 shape = RoundedCornerShape(20.dp),
@@ -146,7 +143,6 @@ fun AdminDashboardScreen(
             }
         }
 
-        // Collection Target Progress Bar
         item {
             CollectionProgressBarCard(
                 title = if (lang == Language.BN) "চলতি মাসের চাঁদা আদায়ের অগ্রগতি" else "Monthly Collection Goal Progress",
@@ -156,33 +152,56 @@ fun AdminDashboardScreen(
             )
         }
 
-        // Key Metrics Summary Cards Grid
         item {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(10.dp)
-            ) {
-                MetricCard(
-                    title = if (lang == Language.BN) "মোট সদস্য" else "Total Members",
-                    value = Strings.formatDigits(totalMembersCount.toString(), lang),
-                    subtitle = "${Strings.formatDigits(activeMembersCount.toString(), lang)} ${if (lang == Language.BN) "সক্রিয়" else "Active"}",
-                    icon = Icons.Default.Groups,
-                    accentColor = PrimaryGreen,
-                    modifier = Modifier.weight(1f)
-                )
+            Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
+                    MetricCard(
+                        title = if (lang == Language.BN) "মোট সদস্য" else "Total Members",
+                        value = Strings.formatDigits(totalMembersCount.toString(), lang),
+                        subtitle = "${Strings.formatDigits(activeMembersCount.toString(), lang)} ${if (lang == Language.BN) "সক্রিয় সদস্য" else "Active Members"}",
+                        icon = Icons.Default.Groups,
+                        accentColor = PrimaryGreen,
+                        modifier = Modifier.weight(1f)
+                    )
 
-                MetricCard(
-                    title = Strings.lblAvailableBalance[lang]!!,
-                    value = Strings.formatCurrency(balance, lang),
-                    subtitle = "${if (lang == Language.BN) "ব্যয়:" else "Exp:"} ${Strings.formatCurrency(totalExpenses, lang)}",
-                    icon = Icons.Default.AccountBalance,
-                    accentColor = StatusInfo,
-                    modifier = Modifier.weight(1f)
-                )
+                    MetricCard(
+                        title = Strings.lblAvailableBalance[lang]!!,
+                        value = Strings.formatCurrency(balance, lang),
+                        subtitle = "${if (lang == Language.BN) "মোট আয়:" else "Inc:"} ${Strings.formatCurrency(totalIncome, lang)}",
+                        icon = Icons.Default.AccountBalance,
+                        accentColor = StatusInfo,
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
+                    MetricCard(
+                        title = if (lang == Language.BN) "অতিরিক্ত অনুদান" else "Extra Donations",
+                        value = Strings.formatCurrency(extraDonationsTotal, lang),
+                        subtitle = "${if (lang == Language.BN) "সংগৃহীত" else "Collected"}",
+                        icon = Icons.Default.VolunteerActivism,
+                        accentColor = WarmGold,
+                        modifier = Modifier.weight(1f)
+                    )
+
+                    MetricCard(
+                        title = if (lang == Language.BN) "প্রত্যাশিত চাঁদা" else "Expected Monthly Dues",
+                        value = Strings.formatCurrency(expectedThisMonth, lang),
+                        subtitle = "${if (lang == Language.BN) "চলতি মাস" else "This Month"}",
+                        icon = Icons.Default.Payments,
+                        accentColor = StatusSuccess,
+                        modifier = Modifier.weight(1f)
+                    )
+                }
             }
         }
 
-        // GRAPHICAL CHARTS SECTION
         item {
             Text(
                 text = if (lang == Language.BN) "আর্থিক এনালাইটিক্স ও চার্ট" else "Graphical Financial Visualizations",
@@ -192,7 +211,6 @@ fun AdminDashboardScreen(
             )
         }
 
-        // Bar Chart - Monthly Collection Trend
         item {
             BarChartCard(
                 title = if (lang == Language.BN) "মাসভিত্তিক চাঁদা সংগ্রহের ট্রেন্ড" else "Monthly Collection Trend (2025)",
@@ -201,7 +219,6 @@ fun AdminDashboardScreen(
             )
         }
 
-        // Donut Chart - Fund Breakdown
         item {
             DonutChartCard(
                 title = if (lang == Language.BN) "সংগঠনের ফান্ডের উৎস ও বণ্টন" else "Fund Sources & Distribution",
@@ -211,7 +228,6 @@ fun AdminDashboardScreen(
             )
         }
 
-        // Recent Payments
         item {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -330,7 +346,6 @@ fun RecordPaymentModal(
                     modifier = Modifier.fillMaxWidth()
                 )
 
-                // Allocation Breakdown Card
                 Card(
                     colors = CardDefaults.cardColors(containerColor = WarmGold.copy(alpha = 0.15f)),
                     shape = RoundedCornerShape(8.dp),
@@ -404,6 +419,9 @@ fun MemberManagementScreen(onOpenAddMember: () -> Unit) {
     val members by OrganizationRepository.members.collectAsState()
 
     var searchQuery by remember { mutableStateOf("") }
+    var selectedMemberForView by remember { mutableStateOf<Member?>(null) }
+    var selectedMemberForEdit by remember { mutableStateOf<Member?>(null) }
+    var selectedMemberForRateChange by remember { mutableStateOf<Member?>(null) }
 
     val filtered = members.filter {
         it.nameEn.contains(searchQuery, ignoreCase = true) ||
@@ -494,10 +512,85 @@ fun MemberManagementScreen(onOpenAddMember: () -> Unit) {
                                 )
                             }
                         }
+
+                        HorizontalDivider(modifier = Modifier.padding(vertical = 10.dp), color = SoftBackground)
+
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(6.dp)
+                        ) {
+                            OutlinedButton(
+                                onClick = { selectedMemberForView = member },
+                                shape = RoundedCornerShape(8.dp),
+                                contentPadding = PaddingValues(horizontal = 8.dp, vertical = 2.dp),
+                                modifier = Modifier.weight(1f)
+                            ) {
+                                Icon(Icons.Default.Visibility, contentDescription = null, modifier = Modifier.size(14.dp), tint = PrimaryGreen)
+                                Spacer(modifier = Modifier.width(2.dp))
+                                Text(if (lang == Language.BN) "দেখুন" else "View", fontSize = 11.sp, color = PrimaryGreen)
+                            }
+
+                            OutlinedButton(
+                                onClick = { selectedMemberForEdit = member },
+                                shape = RoundedCornerShape(8.dp),
+                                contentPadding = PaddingValues(horizontal = 8.dp, vertical = 2.dp),
+                                modifier = Modifier.weight(1f)
+                            ) {
+                                Icon(Icons.Default.Edit, contentDescription = null, modifier = Modifier.size(14.dp), tint = PrimaryGreen)
+                                Spacer(modifier = Modifier.width(2.dp))
+                                Text(if (lang == Language.BN) "এডিট" else "Edit", fontSize = 11.sp, color = PrimaryGreen)
+                            }
+
+                            OutlinedButton(
+                                onClick = { selectedMemberForRateChange = member },
+                                shape = RoundedCornerShape(8.dp),
+                                contentPadding = PaddingValues(horizontal = 8.dp, vertical = 2.dp),
+                                modifier = Modifier.weight(1f)
+                            ) {
+                                Icon(Icons.Default.AttachMoney, contentDescription = null, modifier = Modifier.size(14.dp), tint = WarmGold)
+                                Spacer(modifier = Modifier.width(2.dp))
+                                Text(if (lang == Language.BN) "রেট" else "Rate", fontSize = 11.sp, color = DarkGreen)
+                            }
+
+                            IconButton(
+                                onClick = { OrganizationRepository.toggleMemberStatus(member.id) },
+                                modifier = Modifier.size(32.dp)
+                            ) {
+                                Icon(
+                                    imageVector = if (member.status == "Active") Icons.Default.LockOpen else Icons.Default.Lock,
+                                    contentDescription = null,
+                                    tint = if (member.status == "Active") StatusSuccess else StatusError,
+                                    modifier = Modifier.size(18.dp)
+                                )
+                            }
+                        }
                     }
                 }
             }
         }
+    }
+
+    if (selectedMemberForView != null) {
+        ViewMemberProfileModal(
+            member = selectedMemberForView!!,
+            onDismiss = { selectedMemberForView = null }
+        )
+    }
+
+    if (selectedMemberForEdit != null) {
+        EditMemberModal(
+            member = selectedMemberForEdit!!,
+            onDismiss = { selectedMemberForEdit = null },
+            onSuccess = { selectedMemberForEdit = null }
+        )
+    }
+
+    if (selectedMemberForRateChange != null) {
+        ChangeMonthlyRateModal(
+            member = selectedMemberForRateChange!!,
+            onDismiss = { selectedMemberForRateChange = null },
+            onSuccess = { selectedMemberForRateChange = null }
+        )
     }
 }
 
@@ -515,7 +608,6 @@ fun AddMemberModal(
     var altMobile by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var designation by remember { mutableStateOf("সাধারণ সদস্য") }
-    var profession by remember { mutableStateOf("ব্যবসায়ী") }
     var monthlyRateText by remember { mutableStateOf("1000") }
     var initialPassword by remember { mutableStateOf("Pass1234") }
     var presentAddress by remember { mutableStateOf("ঢাকা, বাংলাদেশ") }
@@ -695,13 +787,276 @@ fun AddMemberModal(
 }
 
 @Composable
+fun ViewMemberProfileModal(
+    member: Member,
+    onDismiss: () -> Unit
+) {
+    val lang by OrganizationRepository.currentLanguage.collectAsState()
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = if (lang == Language.BN) "সদস্য পূর্ণাঙ্গ প্রোফাইল" else "Full Member Profile",
+                    fontWeight = FontWeight.Bold,
+                    color = PrimaryGreen,
+                    fontSize = 18.sp
+                )
+                IconButton(onClick = onDismiss) {
+                    Icon(Icons.Default.Close, contentDescription = null, tint = TextSecondary)
+                }
+            }
+        },
+        text = {
+            LazyColumn(
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
+                item {
+                    Card(
+                        colors = CardDefaults.cardColors(containerColor = PrimaryGreen.copy(alpha = 0.1f)),
+                        shape = RoundedCornerShape(12.dp),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Column(modifier = Modifier.padding(12.dp)) {
+                            Text(
+                                text = if (lang == Language.BN) member.nameBn else member.nameEn,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 16.sp,
+                                color = PrimaryGreen
+                            )
+                            Text(
+                                text = "ID: ${member.id} | ${member.designation}",
+                                fontSize = 12.sp,
+                                color = DarkGreen
+                            )
+                        }
+                    }
+                }
+
+                item {
+                    Text(
+                        text = if (lang == Language.BN)
+                            "• নাম (বাংলা): ${member.nameBn}\n• Name (English): ${member.nameEn}\n• মোবাইল: ${member.mobile}\n• বিকল্প মোবাইল: ${if (member.altMobile.isNotEmpty()) member.altMobile else "N/A"}\n• ইমেইল: ${member.email}\n• পদবী: ${member.designation}\n• মাসিক চাঁদা: ${Strings.formatCurrency(member.monthlyContribution, lang)}/মাস\n• যোগদানের তারিখ: ${member.joinDate}\n• বর্তমান ঠিকানা: ${if (member.presentAddress.isNotEmpty()) member.presentAddress else "ঢাকা, বাংলাদেশ"}\n• জরুরী যোগাযোগ: ${if (member.emergencyContact.isNotEmpty()) member.emergencyContact else "N/A"}\n• অ্যাকাউন্ট স্ট্যাটাস: ${member.status}"
+                        else
+                            "• Name (BN): ${member.nameBn}\n• Name (EN): ${member.nameEn}\n• Mobile: ${member.mobile}\n• Alt Mobile: ${if (member.altMobile.isNotEmpty()) member.altMobile else "N/A"}\n• Email: ${member.email}\n• Designation: ${member.designation}\n• Monthly Rate: ${Strings.formatCurrency(member.monthlyContribution, lang)}/mo\n• Join Date: ${member.joinDate}\n• Present Address: ${if (member.presentAddress.isNotEmpty()) member.presentAddress else "Dhaka, Bangladesh"}\n• Emergency Contact: ${if (member.emergencyContact.isNotEmpty()) member.emergencyContact else "N/A"}\n• Account Status: ${member.status}",
+                        fontSize = 12.sp,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        lineHeight = 22.sp
+                    )
+                }
+            }
+        },
+        confirmButton = {
+            Button(
+                onClick = onDismiss,
+                colors = ButtonDefaults.buttonColors(containerColor = PrimaryGreen)
+            ) {
+                Text(if (lang == Language.BN) "বন্ধ করুন" else "Close")
+            }
+        }
+    )
+}
+
+@Composable
+fun EditMemberModal(
+    member: Member,
+    onDismiss: () -> Unit,
+    onSuccess: () -> Unit
+) {
+    val lang by OrganizationRepository.currentLanguage.collectAsState()
+
+    var nameBn by remember { mutableStateOf(member.nameBn) }
+    var nameEn by remember { mutableStateOf(member.nameEn) }
+    var mobile by remember { mutableStateOf(member.mobile) }
+    var altMobile by remember { mutableStateOf(member.altMobile) }
+    var email by remember { mutableStateOf(member.email) }
+    var designation by remember { mutableStateOf(member.designation) }
+    var presentAddress by remember { mutableStateOf(member.presentAddress) }
+    var emergencyContact by remember { mutableStateOf(member.emergencyContact) }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            Text(
+                text = if (lang == Language.BN) "সদস্য তথ্য এডিট করুন" else "Edit Member Information",
+                fontWeight = FontWeight.Bold,
+                color = PrimaryGreen,
+                fontSize = 18.sp
+            )
+        },
+        text = {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .heightIn(max = 420.dp),
+                verticalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
+                item {
+                    OutlinedTextField(
+                        value = nameBn,
+                        onValueChange = { nameBn = it },
+                        label = { Text(if (lang == Language.BN) "পূর্ণ নাম (বাংলা)" else "Full Name (Bangla)") },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+
+                item {
+                    OutlinedTextField(
+                        value = nameEn,
+                        onValueChange = { nameEn = it },
+                        label = { Text(if (lang == Language.BN) "পূর্ণ নাম (ইংরেজি)" else "Full Name (English)") },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+
+                item {
+                    OutlinedTextField(
+                        value = mobile,
+                        onValueChange = { mobile = it },
+                        label = { Text(if (lang == Language.BN) "মোবাইল নম্বর" else "Mobile Number") },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+
+                item {
+                    OutlinedTextField(
+                        value = email,
+                        onValueChange = { email = it },
+                        label = { Text(if (lang == Language.BN) "ইমেইল এড্রেস" else "Email Address") },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+
+                item {
+                    OutlinedTextField(
+                        value = designation,
+                        onValueChange = { designation = it },
+                        label = { Text(if (lang == Language.BN) "সংগঠনের পদবী" else "Designation") },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+
+                item {
+                    OutlinedTextField(
+                        value = presentAddress,
+                        onValueChange = { presentAddress = it },
+                        label = { Text(if (lang == Language.BN) "বর্তমান ঠিকানা" else "Present Address") },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+            }
+        },
+        confirmButton = {
+            Button(
+                onClick = {
+                    val updated = member.copy(
+                        nameBn = nameBn,
+                        nameEn = nameEn,
+                        mobile = mobile,
+                        altMobile = altMobile,
+                        email = email,
+                        designation = designation,
+                        presentAddress = presentAddress,
+                        emergencyContact = emergencyContact
+                    )
+                    OrganizationRepository.updateMemberProfile(updated)
+                    onSuccess()
+                },
+                colors = ButtonDefaults.buttonColors(containerColor = PrimaryGreen)
+            ) {
+                Text(if (lang == Language.BN) "আপডেট করুন" else "Save Changes")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text(Strings.btnCancel[lang]!!)
+            }
+        }
+    )
+}
+
+@Composable
+fun ChangeMonthlyRateModal(
+    member: Member,
+    onDismiss: () -> Unit,
+    onSuccess: () -> Unit
+) {
+    val lang by OrganizationRepository.currentLanguage.collectAsState()
+    var newRateText by remember { mutableStateOf(member.monthlyContribution.toInt().toString()) }
+    var effectiveDate by remember { mutableStateOf("2025-03-01") }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            Text(
+                text = if (lang == Language.BN) "মাসিক চাঁদার হার পরিবর্তন" else "Change Monthly Contribution Rate",
+                fontWeight = FontWeight.Bold,
+                color = PrimaryGreen,
+                fontSize = 17.sp
+            )
+        },
+        text = {
+            Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                Text(
+                    text = "${if (lang == Language.BN) "সদস্য:" else "Member:"} ${if (lang == Language.BN) member.nameBn else member.nameEn} (ID: ${member.id})",
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.Bold
+                )
+
+                Text(
+                    text = "${if (lang == Language.BN) "বর্তমান হার:" else "Current Rate:"} ${Strings.formatCurrency(member.monthlyContribution, lang)}/মাস",
+                    fontSize = 12.sp,
+                    color = TextSecondary
+                )
+
+                OutlinedTextField(
+                    value = newRateText,
+                    onValueChange = { newRateText = it },
+                    label = { Text(if (lang == Language.BN) "নতুন মাসিক চাঁদার পরিমাণ (৳)" else "New Monthly Rate (৳)") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                OutlinedTextField(
+                    value = effectiveDate,
+                    onValueChange = { effectiveDate = it },
+                    label = { Text(if (lang == Language.BN) "কার্যকরের তারিখ (YYYY-MM-DD)" else "Effective Date (YYYY-MM-DD)") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+        },
+        confirmButton = {
+            Button(
+                onClick = {
+                    val newRate = newRateText.toDoubleOrNull() ?: member.monthlyContribution
+                    OrganizationRepository.updateMonthlyContribution(member.id, newRate, effectiveDate)
+                    onSuccess()
+                },
+                colors = ButtonDefaults.buttonColors(containerColor = PrimaryGreen)
+            ) {
+                Text(if (lang == Language.BN) "রেট আপডেট করুন" else "Update Rate")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text(Strings.btnCancel[lang]!!)
+            }
+        }
+    )
+}
+
+@Composable
 fun AdminPaymentsScreen(onOpenRecordPayment: () -> Unit) {
     val lang by OrganizationRepository.currentLanguage.collectAsState()
     val receipts by OrganizationRepository.paymentReceipts.collectAsState()
-    val donations by OrganizationRepository.donations.collectAsState()
 
     var searchQuery by remember { mutableStateOf("") }
-    var selectedFilter by remember { mutableStateOf("ALL") } // ALL, APPROVED, PENDING
+    var selectedFilter by remember { mutableStateOf("ALL") }
 
     val totalCollected = receipts.sumOf { it.totalReceived }
     val totalContribAlloc = receipts.sumOf { it.contributionAmount }
@@ -723,7 +1078,6 @@ fun AdminPaymentsScreen(onOpenRecordPayment: () -> Unit) {
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(14.dp)
     ) {
-        // Header & Quick Record Payment Action
         item {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -756,7 +1110,6 @@ fun AdminPaymentsScreen(onOpenRecordPayment: () -> Unit) {
             }
         }
 
-        // Collection Metrics Summary Banner
         item {
             Card(
                 shape = RoundedCornerShape(16.dp),
@@ -815,7 +1168,6 @@ fun AdminPaymentsScreen(onOpenRecordPayment: () -> Unit) {
             }
         }
 
-        // Search & Filter Tabs
         item {
             OutlinedTextField(
                 value = searchQuery,
@@ -827,7 +1179,6 @@ fun AdminPaymentsScreen(onOpenRecordPayment: () -> Unit) {
             )
         }
 
-        // Receipt Records List
         item {
             Text(
                 text = "${if (lang == Language.BN) "সর্বমোট পেমেন্ট রসিদ" else "Total Payment Receipts"} (${Strings.formatDigits(filteredReceipts.size.toString(), lang)})",
@@ -930,14 +1281,6 @@ fun AdminPaymentsScreen(onOpenRecordPayment: () -> Unit) {
     }
 }
 
-@Preview
-@Composable
-fun AddMemberModalPreview() {
-    FundManagementTheme {
-        AddMemberModal(onDismiss = {}, onSuccess = {})
-    }
-}
-
 @Composable
 fun AdminSettingsScreen() {
     val lang by OrganizationRepository.currentLanguage.collectAsState()
@@ -947,7 +1290,6 @@ fun AdminSettingsScreen() {
 
     var isEditMode by remember { mutableStateOf(false) }
 
-    // Temporary form state during Edit Mode
     var editNameBn by remember(orgProfile) { mutableStateOf(orgProfile.nameBn) }
     var editNameEn by remember(orgProfile) { mutableStateOf(orgProfile.nameEn) }
     var editRegNo by remember(orgProfile) { mutableStateOf(orgProfile.regNumber) }
@@ -1004,7 +1346,6 @@ fun AdminSettingsScreen() {
             }
         }
 
-        // 1. ORGANIZATION PROFILE CARD (View Mode vs. Edit Mode Pattern)
         item {
             Card(
                 shape = RoundedCornerShape(16.dp),
@@ -1046,7 +1387,6 @@ fun AdminSettingsScreen() {
                     }
 
                     if (!isEditMode) {
-                        // VIEW MODE (Clean, Formatted Overview)
                         Text(
                             text = if (lang == Language.BN)
                                 "• সংগঠনের নাম: ${orgProfile.nameBn}\n• রেজিস্ট্রেশন নং: ${orgProfile.regNumber}\n• অর্থবছর: ${orgProfile.fiscalYear}\n• কারেন্সি চিহ্ন: ${orgProfile.currencySymbol}\n• ইমেইল: ${orgProfile.contactEmail}\n• ডিফল্ট চাঁদার হার: ${Strings.formatCurrency(orgProfile.defaultMonthlyRate, lang)} / মাস\n• বকেয়া গ্রেস পিরিয়ড: ${Strings.formatDigits(orgProfile.gracePeriodDays.toString(), lang)} দিন"
@@ -1057,7 +1397,6 @@ fun AdminSettingsScreen() {
                             lineHeight = 22.sp
                         )
                     } else {
-                        // EDIT MODE (Editable Input Form)
                         OutlinedTextField(
                             value = editNameBn,
                             onValueChange = { editNameBn = it },
@@ -1169,7 +1508,6 @@ fun AdminSettingsScreen() {
             }
         }
 
-        // 1. MANAGER ROLE PERMISSIONS MATRIX (Isolated to Manager Role)
         item {
             Card(
                 shape = RoundedCornerShape(16.dp),
@@ -1191,48 +1529,44 @@ fun AdminSettingsScreen() {
 
                     Spacer(modifier = Modifier.height(12.dp))
 
-                    // Manager Option 1: Record Expenses
                     PermissionToggleRow(
                         title = if (lang == Language.BN) "সংগঠনের খরচ যুক্ত করার অনুমতি" else "Allow Managers to Record Expenses",
                         subtitle = if (lang == Language.BN) "বন্ধ করলে ম্যানেজার ভিউতে খরচ অপশন থাকবে না (এডমিনে প্রভাব ফেলবে না)" else "Disabling removes expense entry ONLY for Manager role",
                         isChecked = managerPerms.canAddExpense,
-                        onCheckedChange = { isChecked ->
+                        onCheckedChange = { isChecked: Boolean ->
                             OrganizationRepository.updateManagerPermissions(managerPerms.copy(canAddExpense = isChecked))
                         }
                     )
 
                     HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp), color = SoftBackground)
 
-                    // Manager Option 2: Approve Payments Directly
                     PermissionToggleRow(
                         title = if (lang == Language.BN) "পেমেন্ট সরাসরি অনুমোদন করার অনুমতি" else "Allow Managers to Approve Payments",
                         subtitle = if (lang == Language.BN) "বন্ধ করলে ম্যানেজারের এন্ট্রি এডমিন এপ্রুভালের জন্য পেন্ডিং থাকবে" else "Disabling requires Admin approval for Manager payment logs",
                         isChecked = managerPerms.canApprovePayments,
-                        onCheckedChange = { isChecked ->
+                        onCheckedChange = { isChecked: Boolean ->
                             OrganizationRepository.updateManagerPermissions(managerPerms.copy(canApprovePayments = isChecked))
                         }
                     )
 
                     HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp), color = SoftBackground)
 
-                    // Manager Option 3: View All Reports
                     PermissionToggleRow(
                         title = if (lang == Language.BN) "সকল আর্থিক রিপোর্ট দেখার অনুমতি" else "Allow Managers to View All Reports",
                         subtitle = if (lang == Language.BN) "বন্ধ করলে ম্যানেজাররা বিস্তারিত রিপোর্ট দেখতে পারবে না" else "Disabling restricts detailed report screens for Manager role",
                         isChecked = managerPerms.canViewAllReports,
-                        onCheckedChange = { isChecked ->
+                        onCheckedChange = { isChecked: Boolean ->
                             OrganizationRepository.updateManagerPermissions(managerPerms.copy(canViewAllReports = isChecked))
                         }
                     )
 
                     HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp), color = SoftBackground)
 
-                    // Manager Option 4: Send Notifications
                     PermissionToggleRow(
                         title = if (lang == Language.BN) "সদস্যদের নোটিফিকেশন পাঠানোর অনুমতি" else "Allow Managers to Send Notifications",
                         subtitle = if (lang == Language.BN) "বন্ধ করলে ম্যানেজাররা নোটিফিকেশন ও বার্তা পাঠাতে পারবে না" else "Disabling restricts broadcast notices for Manager role",
                         isChecked = managerPerms.canSendNotification,
-                        onCheckedChange = { isChecked ->
+                        onCheckedChange = { isChecked: Boolean ->
                             OrganizationRepository.updateManagerPermissions(managerPerms.copy(canSendNotification = isChecked))
                         }
                     )
@@ -1240,7 +1574,6 @@ fun AdminSettingsScreen() {
             }
         }
 
-        // 2. MEMBER ROLE VISIBILITY & PRIVACY MATRIX (Isolated to Member Role)
         item {
             Card(
                 shape = RoundedCornerShape(16.dp),
@@ -1262,93 +1595,37 @@ fun AdminSettingsScreen() {
 
                     Spacer(modifier = Modifier.height(12.dp))
 
-                    // Member Option 1: Show Member Names Publicly
                     PermissionToggleRow(
                         title = if (lang == Language.BN) "তালিকায় সদস্যের নাম প্রকাশ করা" else "Show Member Names Publicly",
                         subtitle = if (lang == Language.BN) "বন্ধ করলে মেম্বার ভিউতে নামগুলো গোপন থাকবে" else "Hides member names ONLY in Member role view",
                         isChecked = privacySettings.showMemberName,
-                        onCheckedChange = { isChecked ->
+                        onCheckedChange = { isChecked: Boolean ->
                             OrganizationRepository.updatePrivacySettings(privacySettings.copy(showMemberName = isChecked))
                         }
                     )
 
                     HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp), color = SoftBackground)
 
-                    // Member Option 2: Show Amounts Publicly
                     PermissionToggleRow(
                         title = if (lang == Language.BN) "অনুদান ও চাঁদার টাকা প্রকাশ করা" else "Show Donation Amounts Publicly",
                         subtitle = if (lang == Language.BN) "বন্ধ করলে মেম্বাররা টাকার পরিমাণ দেখতে পাবে না" else "Hides transaction amounts ONLY in Member role view",
                         isChecked = privacySettings.showAmount,
-                        onCheckedChange = { isChecked ->
+                        onCheckedChange = { isChecked: Boolean ->
                             OrganizationRepository.updatePrivacySettings(privacySettings.copy(showAmount = isChecked))
                         }
                     )
 
                     HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp), color = SoftBackground)
 
-                    // Member Option 3: Full Contribution History
                     PermissionToggleRow(
                         title = if (lang == Language.BN) "সম্পূর্ণ কন্ট্রিবিউশন হিস্ট্রি দেখানো" else "Show Full Contribution History",
                         subtitle = if (lang == Language.BN) "মেম্বাররা বিগত বছরের সম্পূর্ণ চাঁদার হিসাব দেখতে পাবে" else "Allow members to browse full historical logs",
                         isChecked = privacySettings.showFullContributionHistory,
-                        onCheckedChange = { isChecked ->
+                        onCheckedChange = { isChecked: Boolean ->
                             OrganizationRepository.updatePrivacySettings(privacySettings.copy(showFullContributionHistory = isChecked))
                         }
                     )
                 }
-            }
-        }
-
-        // 3. SECURITY AUDIT LOGS SUMMARY
-        item {
-            Card(
-                shape = RoundedCornerShape(16.dp),
-                colors = CardDefaults.cardColors(containerColor = SurfaceWhite),
-                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(Icons.Default.History, contentDescription = null, tint = StatusInfo)
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(
-                            text = if (lang == Language.BN) "সিকিউরিটি অডিট ট্রেইল ও পারমিশন লগ" else "Security Audit Logs & History",
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 15.sp,
-                            color = PrimaryGreen
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.height(10.dp))
-
-                    Text(
-                        text = if (lang == Language.BN)
-                            "• ২০ ফেব্রু ২০২৫ - Md. Eliyas Akondo (Admin) দ্বারা নতুন মেম্বার তৈরি করা হয়েছে\n• ১৯ ফেব্রু ২০২৫ - ম্যানেজার রোলকে খরচ যুক্ত করার অনুমতি দেওয়া হয়েছে\n• ১৮ ফেব্রু ২০২৫ - মেম্বারদের জন্য ফান্ড ব্যালেন্স দৃশ্যমানতা টগল আপডেট করা হয়েছে"
-                        else
-                            "• Feb 20, 2025 - New Member created by Md. Eliyas Akondo (Admin)\n• Feb 19, 2025 - Granted Manager role permission to record expenses\n• Feb 18, 2025 - Updated public fund balance visibility setting for members",
-                        fontSize = 11.sp,
-                        color = TextSecondary,
-                        lineHeight = 18.sp
-                    )
-                }
-            }
-        }
-
-        // Export All Data Button
-        item {
-            Button(
-                onClick = { },
-                colors = ButtonDefaults.buttonColors(containerColor = PrimaryGreen),
-                shape = RoundedCornerShape(12.dp),
-                modifier = Modifier.fillMaxWidth().height(48.dp)
-            ) {
-                Icon(Icons.Default.Download, contentDescription = null)
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(
-                    text = if (lang == Language.BN) "সম্পূর্ণ পারমিশন ও ফিন্যান্সিয়াল লেজার ব্যাকআপ নিন" else "Backup All Permissions & Ledger Data (PDF/Excel)",
-                    fontSize = 13.sp,
-                    fontWeight = FontWeight.Bold
-                )
             }
         }
     }
@@ -1391,5 +1668,3 @@ private fun PermissionToggleRow(
         )
     }
 }
-
-
