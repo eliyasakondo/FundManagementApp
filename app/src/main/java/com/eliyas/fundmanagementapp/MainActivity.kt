@@ -15,7 +15,16 @@ import com.eliyas.fundmanagementapp.repository.OrganizationRepository
 import com.eliyas.fundmanagementapp.ui.common.BottomNavigationBar
 import com.eliyas.fundmanagementapp.ui.common.RoleSwitcherBar
 import com.eliyas.fundmanagementapp.ui.common.TopBarHeader
-import com.eliyas.fundmanagementapp.ui.screens.*
+import com.eliyas.fundmanagementapp.ui.dashboard.DashboardScreen
+import com.eliyas.fundmanagementapp.ui.member.MemberHomeScreen
+import com.eliyas.fundmanagementapp.ui.member.MyContributionDetailsScreen
+import com.eliyas.fundmanagementapp.ui.members.AddMemberModal
+import com.eliyas.fundmanagementapp.ui.members.MembersScreen
+import com.eliyas.fundmanagementapp.ui.payments.PaymentsScreen
+import com.eliyas.fundmanagementapp.ui.payments.RecordPaymentModal
+import com.eliyas.fundmanagementapp.ui.reports.ReportsScreen
+import com.eliyas.fundmanagementapp.ui.screens.SplashScreen
+import com.eliyas.fundmanagementapp.ui.settings.SettingsScreen
 import com.eliyas.fundmanagementapp.ui.theme.FundManagementTheme
 
 class MainActivity : ComponentActivity() {
@@ -93,27 +102,27 @@ fun MainAppContent() {
                     when (currentTab) {
                         "home" -> MemberHomeScreen(onNavigateToTab = { currentTab = it })
                         "history" -> MyContributionDetailsScreen()
-                        "members" -> AllMembersContributionHistoryScreen()
-                        "messages" -> AllMembersContributionHistoryScreen() // Shared tab
-                        "profile" -> MyContributionDetailsScreen() // Profile view
+                        "members" -> ReportsScreen()
+                        "messages" -> ReportsScreen()
+                        "profile" -> MyContributionDetailsScreen()
                         else -> MemberHomeScreen(onNavigateToTab = { currentTab = it })
                     }
                 } else {
                     when (currentTab) {
-                        "dashboard" -> AdminDashboardScreen(
+                        "dashboard" -> DashboardScreen(
                             onNavigate = { currentTab = it },
                             onOpenRecordPayment = { showRecordPaymentModal = true },
                             onOpenAddMember = { showAddMemberModal = true }
                         )
-                        "members" -> MemberManagementScreen(
+                        "members" -> MembersScreen(
                             onOpenAddMember = { showAddMemberModal = true }
                         )
-                        "payments" -> AdminPaymentsScreen(
+                        "payments" -> PaymentsScreen(
                             onOpenRecordPayment = { showRecordPaymentModal = true }
                         )
-                        "reports" -> AllMembersContributionHistoryScreen()
-                        "settings" -> AdminSettingsScreen()
-                        else -> AdminDashboardScreen(
+                        "reports" -> ReportsScreen()
+                        "settings" -> SettingsScreen()
+                        else -> DashboardScreen(
                             onNavigate = { currentTab = it },
                             onOpenRecordPayment = { showRecordPaymentModal = true },
                             onOpenAddMember = { showAddMemberModal = true }

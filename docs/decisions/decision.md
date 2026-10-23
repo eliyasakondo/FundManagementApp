@@ -96,3 +96,15 @@
 - **Consequences:**
   - Consistent 12dp/16dp card radii and 48dp touch targets across all screens.
   - Native dark mode support and responsive Compose layouts.
+
+---
+
+## ADR 009: Feature-First Package Architecture over Role-Based Monoliths
+
+- **Status:** Accepted
+- **Date:** 2026-03-03
+- **Context:** Monolithic role-based UI files (`AdminScreens.kt`, `ManagerScreens.kt`) grew over 1,000+ lines, violating the Single Responsibility Principle and causing Kotlin overload resolution ambiguity errors.
+- **Decision:** Migrate UI layer to a Feature-First package structure (`ui/dashboard`, `ui/members`, `ui/payments`, `ui/reports`, `ui/settings`, `ui/member`), where each screen and dialog lives in its own dedicated single-responsibility file.
+- **Consequences:**
+  - Prevents monolithic file compilation errors and simplifies git merges.
+  - Improves component reusability and Clean Architecture presentation separation.
