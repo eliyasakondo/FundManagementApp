@@ -9,6 +9,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -26,7 +27,7 @@ import com.eliyas.fundmanagementapp.localization.Strings
 import com.eliyas.fundmanagementapp.model.Language
 import com.eliyas.fundmanagementapp.ui.theme.*
 
-// 1. MONTHLY COLLECTION BAR CHART
+// 1. MONTHLY COLLECTION BAR CHART (Last 6 Months, Bottom-Aligned Month Labels)
 @Composable
 fun BarChartCard(
     title: String,
@@ -35,6 +36,9 @@ fun BarChartCard(
     lang: Language,
     modifier: Modifier = Modifier
 ) {
+    val last6MonthsData = data.takeLast(6)
+    val calculatedMax = maxOf(maxVal, (last6MonthsData.maxOfOrNull { it.second } ?: 1.0) * 1.15)
+
     Card(
         shape = RoundedCornerShape(18.dp),
         colors = CardDefaults.cardColors(containerColor = SurfaceWhite),
@@ -51,45 +55,56 @@ fun BarChartCard(
 
             Spacer(modifier = Modifier.height(16.dp))
 
+            // Last 6 Months Vertical Bar Chart Row
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(140.dp),
+                modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.Bottom
             ) {
-                data.forEach { (label, amount) ->
-                    val ratio = (amount / maxVal).coerceIn(0.1, 1.0).toFloat()
+                last6MonthsData.forEach { (label, amount) ->
+                    val ratio = (amount / calculatedMax).coerceIn(0.08, 1.0).toFloat()
 
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Bottom,
                         modifier = Modifier.weight(1f)
                     ) {
+                        // 1. Numeric Amount Label above bar
                         Text(
                             text = Strings.formatDigits(String.format("%.0fk", amount / 1000), lang),
-                            fontSize = 9.sp,
+                            fontSize = 10.sp,
                             fontWeight = FontWeight.Bold,
                             color = PrimaryGreen
                         )
 
-                        Spacer(modifier = Modifier.height(4.dp))
-
-                        Box(
-                            modifier = Modifier
-                                .width(22.dp)
-                                .fillMaxHeight(ratio)
-                                .clip(RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp))
-                                .background(if (amount > 200000) PrimaryGreen else WarmGold)
-                        )
-
                         Spacer(modifier = Modifier.height(6.dp))
 
+                        // 2. Fixed-Height Bar Track Container (100dp)
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(100.dp)
+                                .padding(horizontal = 4.dp)
+                                .background(SoftBackground, RoundedCornerShape(8.dp)),
+                            contentAlignment = Alignment.BottomCenter
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .fillMaxHeight(ratio)
+                                    .clip(RoundedCornerShape(topStart = 6.dp, topEnd = 6.dp))
+                                    .background(if (amount >= 300000) PrimaryGreen else WarmGold)
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        // 3. Month Name Label explicitly sitting at the Bottom Axis
                         Text(
                             text = label,
-                            fontSize = 10.sp,
-                            fontWeight = FontWeight.Medium,
-                            color = TextSecondary
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onSurface,
+                            maxLines = 1
                         )
                     }
                 }
@@ -127,7 +142,6 @@ fun DonutChartCard(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                // Canvas Donut Chart
                 Box(
                     modifier = Modifier.size(110.dp),
                     contentAlignment = Alignment.Center
@@ -165,7 +179,6 @@ fun DonutChartCard(
 
                 Spacer(modifier = Modifier.width(20.dp))
 
-                // Legend
                 Column(
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                     modifier = Modifier.weight(1f)
@@ -236,7 +249,6 @@ fun CollectionProgressBarCard(
 
             Spacer(modifier = Modifier.height(10.dp))
 
-            // Smooth Rounded Custom Progress Bar
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
