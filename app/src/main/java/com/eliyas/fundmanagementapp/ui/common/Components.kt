@@ -256,6 +256,7 @@ fun BottomNavigationBar(
                 Triple("dashboard", Strings.navDashboard[currentLang]!!, Icons.Default.Dashboard),
                 Triple("members", Strings.navMembers[currentLang]!!, Icons.Default.People),
                 Triple("payments", Strings.navPayments[currentLang]!!, Icons.Default.Payments),
+                Triple("expenses", Strings.navExpenses[currentLang]!!, Icons.Default.ReceiptLong),
                 Triple("reports", Strings.navReports[currentLang]!!, Icons.Default.Assessment),
                 Triple("settings", Strings.navSettings[currentLang]!!, Icons.Default.Settings)
             )

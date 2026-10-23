@@ -108,3 +108,15 @@
 - **Consequences:**
   - Prevents monolithic file compilation errors and simplifies git merges.
   - Improves component reusability and Clean Architecture presentation separation.
+
+---
+
+## ADR 010: Complete Navigation Menu Coverage & Role-Gated Expense Management
+
+- **Status:** Accepted
+- **Date:** 2026-03-03
+- **Context:** Placeholder routes for Member `messages` and `profile` tabs lacked dedicated screens, and organizational expenses lacked a dedicated management ledger screen and voucher entry modal.
+- **Decision:** Implement `NotificationsScreen.kt`, `MemberProfileScreen.kt`, `ExpensesScreen.kt`, `RecordExpenseModal.kt`, and `NotificationBottomSheet.kt`, while enforcing role-based access control (RBAC) guards on Admin System Settings.
+- **Consequences:**
+  - 100% complete navigation menu coverage for Admin, Manager, and Member roles.
+  - Dedicated expense voucher logging and categorized expense ledger.

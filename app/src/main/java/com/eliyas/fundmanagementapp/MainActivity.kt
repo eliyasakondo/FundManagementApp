@@ -13,11 +13,16 @@ import com.eliyas.fundmanagementapp.model.Language
 import com.eliyas.fundmanagementapp.model.UserRole
 import com.eliyas.fundmanagementapp.repository.OrganizationRepository
 import com.eliyas.fundmanagementapp.ui.common.BottomNavigationBar
+import com.eliyas.fundmanagementapp.ui.common.NotificationBottomSheet
 import com.eliyas.fundmanagementapp.ui.common.RoleSwitcherBar
 import com.eliyas.fundmanagementapp.ui.common.TopBarHeader
 import com.eliyas.fundmanagementapp.ui.dashboard.DashboardScreen
+import com.eliyas.fundmanagementapp.ui.expenses.ExpensesScreen
+import com.eliyas.fundmanagementapp.ui.expenses.RecordExpenseModal
 import com.eliyas.fundmanagementapp.ui.member.MemberHomeScreen
+import com.eliyas.fundmanagementapp.ui.member.MemberProfileScreen
 import com.eliyas.fundmanagementapp.ui.member.MyContributionDetailsScreen
+import com.eliyas.fundmanagementapp.ui.member.NotificationsScreen
 import com.eliyas.fundmanagementapp.ui.members.AddMemberModal
 import com.eliyas.fundmanagementapp.ui.members.MembersScreen
 import com.eliyas.fundmanagementapp.ui.payments.PaymentsScreen
@@ -44,7 +49,9 @@ fun MainAppContent() {
     var isSplashActive by remember { mutableStateOf(true) }
     var currentTab by remember { mutableStateOf("home") }
     var showRecordPaymentModal by remember { mutableStateOf(false) }
+    var showRecordExpenseModal by remember { mutableStateOf(false) }
     var showAddMemberModal by remember { mutableStateOf(false) }
+    var showNotificationBottomSheet by remember { mutableStateOf(false) }
 
     val lang by OrganizationRepository.currentLanguage.collectAsState()
     val role by OrganizationRepository.currentUserRole.collectAsState()
@@ -77,7 +84,7 @@ fun MainAppContent() {
                         title = Strings.appName[lang]!!,
                         unreadNotifications = unreadCount,
                         onNotificationClick = {
-                            OrganizationRepository.markAllNotificationsRead()
+                            showNotificationBottomSheet = true
                         },
                         onRoleToggleClick = {},
                         currentLang = lang
@@ -103,8 +110,8 @@ fun MainAppContent() {
                         "home" -> MemberHomeScreen(onNavigateToTab = { currentTab = it })
                         "history" -> MyContributionDetailsScreen()
                         "members" -> ReportsScreen()
-                        "messages" -> ReportsScreen()
-                        "profile" -> MyContributionDetailsScreen()
+                        "messages" -> NotificationsScreen()
+                        "profile" -> MemberProfileScreen()
                         else -> MemberHomeScreen(onNavigateToTab = { currentTab = it })
                     }
                 } else {
@@ -120,8 +127,17 @@ fun MainAppContent() {
                         "payments" -> PaymentsScreen(
                             onOpenRecordPayment = { showRecordPaymentModal = true }
                         )
+                        "expenses" -> ExpensesScreen(
+                            onOpenRecordExpense = { showRecordExpenseModal = true }
+                        )
                         "reports" -> ReportsScreen()
-                        "settings" -> SettingsScreen()
+                        "settings" -> {
+                            if (role == UserRole.ADMIN) {
+                                SettingsScreen()
+                            } else {
+                                MemberProfileScreen()
+                            }
+                        }
                         else -> DashboardScreen(
                             onNavigate = { currentTab = it },
                             onOpenRecordPayment = { showRecordPaymentModal = true },
@@ -130,10 +146,23 @@ fun MainAppContent() {
                     }
                 }
 
+                if (showNotificationBottomSheet) {
+                    NotificationBottomSheet(
+                        onDismiss = { showNotificationBottomSheet = false }
+                    )
+                }
+
                 if (showRecordPaymentModal) {
                     RecordPaymentModal(
                         onDismiss = { showRecordPaymentModal = false },
                         onSuccess = { showRecordPaymentModal = false }
+                    )
+                }
+
+                if (showRecordExpenseModal) {
+                    RecordExpenseModal(
+                        onDismiss = { showRecordExpenseModal = false },
+                        onSuccess = { showRecordExpenseModal = false }
                     )
                 }
 
