@@ -120,7 +120,9 @@ fun MainAppContent() {
                         "dashboard" -> DashboardScreen(
                             onNavigate = { currentTab = it },
                             onOpenRecordPayment = { showRecordPaymentModal = true },
-                            onOpenAddMember = { showAddMemberModal = true }
+                            onOpenAddMember = { showAddMemberModal = true },
+                            onOpenRecordExpense = { showRecordExpenseModal = true },
+                            onOpenNotifications = { showNotificationBottomSheet = true }
                         )
                         "members" -> MembersScreen(
                             onOpenAddMember = { showAddMemberModal = true }
@@ -142,7 +144,9 @@ fun MainAppContent() {
                         else -> DashboardScreen(
                             onNavigate = { currentTab = it },
                             onOpenRecordPayment = { showRecordPaymentModal = true },
-                            onOpenAddMember = { showAddMemberModal = true }
+                            onOpenAddMember = { showAddMemberModal = true },
+                            onOpenRecordExpense = { showRecordExpenseModal = true },
+                            onOpenNotifications = { showNotificationBottomSheet = true }
                         )
                     }
                 }

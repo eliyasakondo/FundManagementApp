@@ -156,3 +156,15 @@
 - **Consequences:**
   - 100% permanent disk storage of all added members, payment logs, and expense vouchers (`fund_management_local.db`).
   - Automatic fallback database seeding if empty on first app launch.
+
+---
+
+## ADR 014: Multi-Section Functional Card Dashboard Architecture
+
+- **Status:** Accepted
+- **Date:** 2026-03-03
+- **Context:** To provide immediate access to key financial services and display live statistics in context, the dashboard was redesigned into a multi-section functional card grid (3x3 grid of rich metric & action cards, full-width informational summary banners, analytics charts, and recent activity logs).
+- **Decision:** Redesign `DashboardScreen.kt` with a hero balance card, a 3x3 interactive card grid (`Record Payment`, `Add Member`, `Add Expense`, `Members`, `Payments`, `Expenses`, `Reports`, `Notices`, `Settings`), a full-width annual summary banner card, and visual trend analytics.
+- **Consequences:**
+  - One-tap access to primary operational dialogs and screen routes.
+  - Live metric context inside every action card complying with Material 3 design system rules.

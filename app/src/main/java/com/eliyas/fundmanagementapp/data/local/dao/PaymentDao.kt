@@ -13,11 +13,11 @@ interface PaymentDao {
     fun getPaymentsByMember(memberId: String): Flow<List<PaymentEntity>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertPayment(payment: PaymentEntity)
+    fun insertPayment(payment: PaymentEntity): Long
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertPayments(payments: List<PaymentEntity>)
+    fun insertPayments(payments: List<PaymentEntity>): List<Long>
 
     @Query("DELETE FROM payments")
-    suspend fun deleteAllPayments()
+    fun deleteAllPayments(): Int
 }

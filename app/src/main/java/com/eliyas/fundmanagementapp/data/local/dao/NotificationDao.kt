@@ -10,11 +10,11 @@ interface NotificationDao {
     fun getAllNotifications(): Flow<List<NotificationEntity>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertNotification(notification: NotificationEntity)
+    fun insertNotification(notification: NotificationEntity): Long
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertNotifications(notifications: List<NotificationEntity>)
+    fun insertNotifications(notifications: List<NotificationEntity>): List<Long>
 
     @Query("UPDATE notifications SET isRead = 1")
-    suspend fun markAllRead()
+    fun markAllRead(): Int
 }

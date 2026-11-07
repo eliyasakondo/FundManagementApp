@@ -13,11 +13,11 @@ interface MemberDao {
     fun getMemberById(id: String): Flow<MemberEntity?>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertMember(member: MemberEntity)
+    fun insertMember(member: MemberEntity): Long
 
     @Update
-    suspend fun updateMember(member: MemberEntity)
+    fun updateMember(member: MemberEntity): Int
 
     @Query("DELETE FROM members WHERE id = :id")
-    suspend fun deleteMember(id: String)
+    fun deleteMember(id: String): Int
 }
